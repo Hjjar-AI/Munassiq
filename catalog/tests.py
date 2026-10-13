@@ -822,3 +822,40 @@ class AdditionalLifecycleTests(FixtureMixin, TestCase):
         response = self.client.patch('/api/v1/me/organizer-profile/', {'bio': 'Updated bio'}, format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['photo_id'], asset.pk)
+
+    def test_jobs_tolerate_occurrence_removed_by_another_cleanup(self):
+        from django.http import Http404
+        from accounts.models import MaintenanceRun
+        self.approved()
+        with patch('catalog.maintenance.locked_occurrence', side_effect=Http404):
+            run_jobs()
+        self.assertIsNotNone(MaintenanceRun.objects.get(name='catalog.lifecycle').finished_at)
+
+    def test_seed_does_not_reassign_ambiguous_manual_places_or_overwrite_moved_source_place(self):
+        from django.core.management import call_command
+        country = Country.objects.create(code='GB', name_ar='بريطانيا', name_en='UK')
+        City.objects.create(country=country, name_ar='معدل', name_en='Adjusted', geonames_id=1001)
+        manual = City.objects.create(country=self.country, name_ar='يدوي', name_en='Duplicate')
+        seed = [{'code': 'SY', 'name_ar': 'سوريا', 'name_en': 'Syria', 'cities': [
+            {'geonames_id': 1001, 'name_ar': 'قديم', 'name_en': 'Original'},
+            {'geonames_id': 1002, 'name_ar': 'الأول', 'name_en': 'Duplicate'},
+            {'geonames_id': 1003, 'name_ar': 'الثاني', 'name_en': 'Duplicate'}]}]
+        with patch('catalog.management.commands.seed_locations.load_locations', return_value=seed):
+            call_command('seed_locations', stdout=io.StringIO())
+        manual.refresh_from_db()
+        self.assertIsNone(manual.geonames_id)
+        self.assertEqual(City.objects.filter(name_en='Duplicate').count(), 3)
+        self.assertEqual(City.objects.get(geonames_id=1001).country_id, country.pk)
+
+    def test_template_owner_can_read_its_attachment_after_original_is_hidden(self):
+        from .files import store
+        asset = store(self.owner, self.upload_image(), 'image')
+        original = self.approved(image_ids=[asset.pk])
+        RoleGrant.objects.create(user=self.other, role='organizer')
+        self.signin(self.other)
+        template = self.post(f'events/{original.pk}/duplicate', {'starts_at': (timezone.now()+timedelta(days=7)).isoformat()})
+        self.assertEqual(template.status_code, 201)
+        svc.change_visibility(self.mod, original.pk, 'hide')
+        download = self.client.get(f'/api/v1/files/{asset.pk}/')
+        self.assertEqual(download.status_code, 200)
+        list(download.streaming_content)

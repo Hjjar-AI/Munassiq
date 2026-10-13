@@ -25,7 +25,7 @@ class Command(BaseCommand):
                     'name_ar': entry['name_ar'], 'name_en': entry['name_en']})
                 added += int(created)
                 existing = list(City.objects.filter(country=country))
-                source_ids = {row.geonames_id for row in existing if row.geonames_id is not None}
+                source_ids = set(City.objects.exclude(geonames_id=None).values_list('geonames_id', flat=True))
                 legacy = defaultdict(list)
                 for row in existing:
                     if row.geonames_id is None:

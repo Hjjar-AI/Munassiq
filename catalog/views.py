@@ -446,7 +446,8 @@ class FileView(InputView):
     def get(self, request, asset_id):
         asset = get_object_or_404(Asset, pk=asset_id)
         public = svc.public_items().filter(published_revision__assets=asset).exists() or asset.organizerprofile_set.filter(Q(user__role_grants__role='organizer') | Q(user__directory_items__status__in=svc.PUBLIC_STATUSES)).exists()
-        owner = bool(request.user and asset.owner_id == request.user.pk)
+        owner = bool(request.user and (asset.owner_id == request.user.pk or
+            Item.objects.filter(owner=request.user, revisions__assets=asset).exists()))
         reviewer = svc.is_reviewer(request.user)
         if not public and not owner and not reviewer:
             raise PermissionDenied('This attachment is private.')
@@ -660,7 +661,7 @@ class ReminderView(InputView):
             raise ValidationError('Choose a reminder time that has not already passed.')
         Reminder.objects.update_or_create(user=request.user, occurrence=row,
             defaults={**data, 'sent_for_start': None})
-        return Response({'detail': 'Reminder saved. Actual delivery is available in the notification milestone.'})
+        return Response({'detail': 'Reminder saved. Notifications are not enabled yet.'})
 
     @extend_schema(request=None, responses={204: None})
     def delete(self, request, occurrence_id):

@@ -4,6 +4,7 @@ from datetime import timedelta
 from pathlib import Path
 from django.conf import settings
 from django.db import transaction
+from django.http import Http404
 from django.utils import timezone
 from accounts.models import MaintenanceRun
 from accounts.services import audit
@@ -55,16 +56,20 @@ def run_jobs():
     run = MaintenanceRun.objects.create(name='catalog.lifecycle')
     now, processed = timezone.now(), 0
     for occurrence_id in Occurrence.objects.order_by('event_id', 'pk').values_list('pk', flat=True):
-        with transaction.atomic():
-            occurrence = locked_occurrence(occurrence_id)
-            if now >= archive_time(occurrence) and not occurrence.archived_at:
-                occurrence.archived_at = archive_time(occurrence)
-                occurrence.save(update_fields=['archived_at'])
-                processed += 1
-            for record in occurrence.registrations.filter(state='pending_reconfirm', reconfirm_deadline__lte=now).select_related('user', 'occurrence'):
-                transition(record, 'cancelled', 'reconfirm.expired')
-                processed += 1
-            promote(occurrence)
+        try:
+            with transaction.atomic():
+                occurrence = locked_occurrence(occurrence_id)
+                if now >= archive_time(occurrence) and not occurrence.archived_at:
+                    occurrence.archived_at = archive_time(occurrence)
+                    occurrence.save(update_fields=['archived_at'])
+                    processed += 1
+                for record in occurrence.registrations.filter(state='pending_reconfirm', reconfirm_deadline__lte=now).select_related('user', 'occurrence'):
+                    transition(record, 'cancelled', 'reconfirm.expired')
+                    processed += 1
+                promote(occurrence)
+        except Http404:
+            # Another completed cleanup may already have removed a cached ID.
+            continue
     with transaction.atomic():
         for item in Item.objects.select_for_update().filter(status='soft_deleted', deleted_at__lte=now-timedelta(days=3)):
             audit(None, 'item.hard_delete', item, kind=item.kind)

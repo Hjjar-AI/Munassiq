@@ -53,7 +53,7 @@ def export_pdf(rows):
     import arabic_reshaper
     font_path = Path(settings.EXPORT_FONT_PATH) if settings.EXPORT_FONT_PATH else None
     if not font_path or not font_path.is_file():
-        error = APIException('Configure EXPORT_FONT_PATH with an Arabic-capable TrueType font before PDF export.')
+        error = APIException('PDF export is currently unavailable. Contact the administrator.')
         error.status_code = 503
         raise error
     # Font names include the configured path so a deployment change cannot reuse a stale font.
