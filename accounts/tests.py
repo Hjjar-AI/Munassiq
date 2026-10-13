@@ -309,6 +309,7 @@ class AccountTests(TestCase):
         for file in [SimpleUploadedFile('fake.jpg', b'not an image'), SimpleUploadedFile('large.pdf', b'x'*(5*1024*1024+1))]:
             response = self.client.post('/api/v1/organizer-requests/', {'name': 'Name', 'workplace': 'Office', 'reason': 'Reason', 'credential': file}, format='multipart')
             self.assertEqual(response.status_code, 400)
+            self.assertTrue(response['Content-Type'].startswith('application/json'))
         self.assertFalse(list(Path(self.private.name).iterdir()))
 
     def test_cleanup_deletes_only_overdue_unverified_accounts_and_is_repeatable(self):

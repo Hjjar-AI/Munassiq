@@ -105,6 +105,7 @@ class CredentialView(InputView):
     permission_classes = [Reviewer]
     serializer_class = MessageSerializer
 
+    @extend_schema(responses={(200, 'application/pdf'): bytes, (200, 'image/jpeg'): bytes})
     def get(self, request, request_id):
         record = get_object_or_404(OrganizerRequest, pk=request_id, status='pending')
         if not record.credential_name:
@@ -145,4 +146,4 @@ class DecideView(InputView):
                 subject='قرار طلب المنظّم / Organizer application decision',
                 body=f'حالة الطلب / Application status: {record.status}\n{record.decision_reason}',
                 expires_at=timezone.now()+timedelta(days=7))
-        return Response({'detail': 'Decision saved; credential deleted.'})
+        return Response({'detail': 'Decision saved; private credential deletion requested.'})

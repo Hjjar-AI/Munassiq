@@ -115,3 +115,34 @@ class OrganizerResultSerializer(serializers.Serializer):
     reviewer_name = serializers.CharField(allow_null=True)
     decision_reason = serializers.CharField()
     created_at = serializers.DateTimeField()
+
+
+class CurrentPolicySerializer(PolicySerializer):
+    id = serializers.IntegerField()
+    created_at = serializers.DateTimeField()
+
+
+class AuditSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    actor_id = serializers.IntegerField(allow_null=True)
+    action = serializers.CharField()
+    target_id = serializers.CharField()
+    metadata = serializers.DictField()
+    created_at = serializers.DateTimeField()
+
+
+class AuditPageSerializer(serializers.Serializer):
+    results = AuditSerializer(many=True)
+    next_before = serializers.IntegerField(allow_null=True)
+
+
+class UserPageSerializer(serializers.Serializer):
+    results = UserSerializer(many=True)
+    next_after = serializers.IntegerField(allow_null=True)
+
+
+class ExportSerializer(UserSerializer):
+    created_at = serializers.DateTimeField()
+    consents = serializers.ListField(child=serializers.DictField())
+    organizer_requests = serializers.ListField(child=serializers.DictField())
+    sessions = serializers.ListField(child=serializers.DictField())

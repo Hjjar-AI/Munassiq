@@ -1,6 +1,6 @@
 from datetime import timedelta
 from django.db import transaction
-from django.http import HttpResponse
+from django.core.exceptions import RequestDataTooBig
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema
@@ -9,13 +9,13 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from . import services as svc
-from .models import AuditEntry, Consent, EmailMessage, LoginBucket, Policy, Session, User
+from .models import AuditEntry, Consent, LoginBucket, Policy, Session, User
 from .permissions import Administrator
 from .maintenance import delete_user
 from .serializers import (BanSerializer, ChangeEmailSerializer, DeleteSerializer, EmailSerializer,
     LoginSerializer, MessageSerializer, PasswordSerializer, PolicySerializer, ProfileSerializer,
     RefreshSerializer, ResetSerializer, RoleSerializer, SessionSerializer, SignupSerializer,
-    TokenSerializer, UserSerializer)
+    TokenSerializer, UserSerializer, CurrentPolicySerializer, AuditPageSerializer, UserPageSerializer, ExportSerializer)
 from django.utils.crypto import salted_hmac
 
 
@@ -34,6 +34,11 @@ def limited(request, action, limit=10):
 
 
 class InputView(GenericAPIView):
+    def handle_exception(self, exc):
+        if isinstance(exc, RequestDataTooBig):
+            exc = ValidationError({'detail': 'Upload exceeds the allowed size.'})
+        return super().handle_exception(exc)
+
     def input(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -189,6 +194,7 @@ class ChangeEmailView(InputView):
 class ExportView(InputView):
     serializer_class = UserSerializer
 
+    @extend_schema(responses=ExportSerializer)
     def get(self, request):
         data = svc.user_data(request.user)
         data['created_at'] = request.user.created_at
@@ -206,6 +212,7 @@ class ExportView(InputView):
 class PolicyView(PublicInputView):
     serializer_class = PolicySerializer
 
+    @extend_schema(responses=CurrentPolicySerializer)
     def get(self, request):
         policy = get_object_or_404(Policy.objects.order_by('-pk'))
         return Response({'id': policy.pk, 'created_at': policy.created_at, **PolicySerializer(policy).data})
@@ -237,7 +244,7 @@ class AdminPolicyView(InputView):
     permission_classes = [Administrator]
     serializer_class = PolicySerializer
 
-    @extend_schema(responses={201: PolicySerializer})
+    @extend_schema(responses={201: CurrentPolicySerializer})
     def post(self, request):
         with transaction.atomic():
             policy = Policy.objects.create(**self.input(request))
@@ -249,6 +256,7 @@ class AdminAuditView(InputView):
     permission_classes = [Administrator]
     serializer_class = MessageSerializer
 
+    @extend_schema(responses=AuditPageSerializer)
     def get(self, request):
         svc.audit(request.user, 'audit.read')
         try:
@@ -273,6 +281,7 @@ class AdminUsersView(InputView):
     permission_classes = [Administrator]
     serializer_class = UserSerializer
 
+    @extend_schema(responses=UserPageSerializer)
     def get(self, request):
         svc.audit(request.user, 'users.list')
         try:

@@ -59,11 +59,14 @@ REST_FRAMEWORK = {"DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsA
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"]}
 SPECTACULAR_SETTINGS = {"TITLE": "مُنسِّق API", "DESCRIPTION": "Professional directory and events",
     "SERVE_INCLUDE_SCHEMA": False}
+LOG_FILE_NAME = os.environ.get("APP_LOG_NAME", "server")
+if not LOG_FILE_NAME.replace("-", "").replace("_", "").isalnum():
+    raise ImproperlyConfigured("APP_LOG_NAME must contain only letters, digits, hyphens or underscores")
 LOGGING = {"version": 1, "disable_existing_loggers": False,
     "formatters": {"daily": {"format": "{asctime} {levelname} {name} {message}", "style": "{"}},
     "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "daily"},
         "file": {"class": "logging.handlers.TimedRotatingFileHandler",
-            "filename": str(RUNTIME_ROOT / "logs" / "server.log"),
+            "filename": str(RUNTIME_ROOT / "logs" / (LOG_FILE_NAME + ".log")),
             "when": "midnight", "utc": True, "backupCount": 30, "formatter": "daily"}},
     "root": {"handlers": ["console", "file"], "level": "INFO"}}
 
@@ -105,3 +108,7 @@ EMAIL_TIMEOUT = 15
 DEFAULT_FROM_EMAIL = os.environ.get("EMAIL_FROM", "")
 DATA_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024
 FILE_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024
+
+FILE_UPLOAD_HANDLERS = ["accounts.uploads.SizeLimitHandler",
+    "django.core.files.uploadhandler.MemoryFileUploadHandler",
+    "django.core.files.uploadhandler.TemporaryFileUploadHandler"]
