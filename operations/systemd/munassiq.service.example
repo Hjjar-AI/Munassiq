@@ -1,0 +1,22 @@
+# Replace /absolute/path/munassiq and munassiq with your actual path/user.
+[Unit]
+Description=Munassiq API
+After=network.target
+
+[Service]
+Type=simple
+User=munassiq
+WorkingDirectory=/absolute/path/munassiq
+EnvironmentFile=/absolute/path/munassiq/.env
+ExecStart=/bin/bash /absolute/path/munassiq/operations/scripts/run_server.sh
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/absolute/path/munassiq/runtime
+
+[Install]
+WantedBy=multi-user.target
