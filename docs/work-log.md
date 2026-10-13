@@ -37,3 +37,23 @@
   must be added to account deletion before content models become available.
 - Preserved pre-existing backend Git history/remote; root records backend as a submodule.
   Milestone commits are local only; no publishing or remote pushes.
+
+## 2026-10-14 — backend content and registration milestone
+- Added event/service revisions, review locks, moderation, private attachments, recurring
+  occurrences, archive snapshots, search/location APIs, reminders and roster CSV/PDF exports.
+- Implemented atomic registration transitions, FIFO eligible promotion, cancellation,
+  rescheduling, capacity checks, transition logs and durable notification intents.
+- Applied user decisions: short-notice changes retain confirmed seats; banned users keep
+  queue positions without promotion; account deletion retains published items without
+  personal attribution; organizer removal requires a reason; series signup covers published
+  future occurrences; staff may auditably correct archived details.
+- Bundled 10,816 Syrian GeoNames populated places with source/license attribution;
+  756 names use English fallback. Disposable database import added 10,817 country/place
+  records, then zero on repeat. No production database was changed.
+- Full run passed 106 core/account/catalog tests, including three concurrent registration
+  tests. After the final attachment permission change, three targeted tests passed,
+  including one new regression case; the complete 107-test suite was not rerun.
+- Django configuration, migration drift, OpenAPI validation, Python AST, shell syntax and
+  whitespace checks passed. Requested migrations were exercised in temporary databases.
+- Push delivery, dashboard, Android, actual SMTP/HTTPS and scheduled service deployment
+  remain unfinished or unverified. No builds, compilation, packaging or Gradle ran.

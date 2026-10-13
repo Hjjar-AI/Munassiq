@@ -5,8 +5,8 @@
 Every account is a regular user. Additional role grants are independent:
 organizer, moderator and admin. Admin is not Django's unrestricted superuser.
 Moderation accepts moderator or admin; administrative routes require admin,
-plus the configured IP allowlist when enabled. Creator permissions will require
-organizer even for admins/moderators when content models arrive.
+plus the configured IP allowlist when enabled. Creator permissions require
+organizer even for admins/moderators.
 The verified organizer badge will derive from the organizer role.
 
 Policy updates create a new immutable version; existing signup consent remains
@@ -49,8 +49,8 @@ and session dates. Passwords, token hashes, raw tokens and credential files are 
 Own deletion requires the current password; admin deletion is audited. The last
 active admin cannot be banned, deleted or stripped of the admin role.
 Dependent account records are removed and audit actors become anonymous references.
-Private-file cleanup follows the commit. Future content/registration tables must
-add the agreed stewardship and cancellation rules before becoming available.
+Private-file cleanup follows the commit. Published items transfer to moderator stewardship with personal author/contact
+references removed; account deletion releases registration seats and removes unpublished items.
 
 ## Scheduled work
 

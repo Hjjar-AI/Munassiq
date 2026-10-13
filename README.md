@@ -8,8 +8,11 @@ The Django backend core and account/role APIs are implemented. This includes sig
 email verification, password recovery, email changes, revocable sessions, bans,
 role management, versioned bilingual policies, account export/deletion, private
 organizer applications, review locks and audit records.
-The dashboard, event/service content, registrations, push notifications, Android
-app, weekly backup and restore implementation remain future milestones.
+Events/services, reviewed revisions, recurrence, registration/waitlists,
+rescheduling/reconfirmation, media, search, map-marker data, reports/feedback,
+organizer profiles, calendar files and CSV/PDF exports are now implemented too.
+The dashboard, push notifications/follows/announcements, Android app, weekly
+backup and restore implementation remain future milestones.
 
 ## Local setup (Linux, Python 3.10+)
 
@@ -113,12 +116,59 @@ and cleanup hourly; they are not installed or activated automatically.
 
 ```bash
 bash operations/scripts/run_management.sh check
-bash operations/scripts/run_management.sh test core accounts --noinput
+bash operations/scripts/run_management.sh test core accounts catalog --noinput
 ```
 `check` examines Django configuration. `test` creates and destroys a separate test
-database, exercising security rules and API endpoints. Use local debug settings.
+database in `runtime/test.sqlite3`, exercising security rules, API endpoints and
+real two-connection registration races. Use local debug settings. This named test
+file is separate from `runtime/database.sqlite3`; do not use it for real data.
 These commands do not build the Android app. Builds, compilation, Gradle and
 packaging require separate authorization.
+
+## Try events and services
+
+After installing the updated requirements and configuring `.env`, run:
+
+```bash
+bash operations/scripts/run_management.sh migrate
+bash operations/scripts/run_management.sh seed_locations
+```
+
+The first command applies the new content tables. Use development data for this
+milestone; production backup/restore instructions are not ready yet. The second
+loads Syria and all 10,816 bundled GeoNames populated places. Rerunning the location
+command preserves existing records. See [location data and attribution](docs/locations.md).
+
+Using the API documentation with your admin access token:
+
+1. Create at least one category through `POST /api/v1/categories/`. For a service
+   with prices, also create the currencies you want enabled through `/currencies/`.
+2. Grant the organizer role to the creating account through the admin role endpoint.
+   Admin/moderator status alone never authorizes creation.
+3. Create an event or service. Expect `status: pending`; guests should not see it.
+4. Sign in as a moderator/admin, claim its review, then submit an approved decision.
+   It should now appear in the public event/service list.
+5. Sign in as a verified regular user and register for an occurrence. With one seat,
+   the first user is `registered`, the next is `waitlisted`. Cancelling the first
+   before cutoff should promote the waiting user automatically.
+6. Try an organizer edit: expect `pending_changes`, while guests still see the
+   previous published version. Approval swaps in the new version.
+
+Dates must include a UTC offset or `Z`; the `time_zone` field uses an IANA name such
+as `Asia/Damascus`. Series registration operates on currently open future occurrences.
+Choose cities through the searchable `/cities/?country=<id>&q=<name>&page=1` endpoint.
+
+For Arabic-capable PDF exports, set `EXPORT_FONT_PATH` to an installed TrueType font.
+The [content guide](docs/catalog.md) explains fields, privacy, state transitions,
+exports, archive behavior, files and scheduled jobs.
+
+```bash
+bash operations/scripts/run_management.sh run_content_jobs
+```
+
+Runs archive, reconfirmation-expiry, promotion and three-day deletion work once.
+Push notifications are not delivered yet; the backend records durable intents for
+the notification milestone. The content-job timer examples are not activated automatically.
 
 ## Production operation is still pending
 

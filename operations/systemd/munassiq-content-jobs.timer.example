@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Munassiq content lifecycle jobs each minute
+
+[Timer]
+OnBootSec=1min
+OnUnitInactiveSec=1min
+Unit=munassiq-content-jobs.service
+
+[Install]
+WantedBy=timers.target
