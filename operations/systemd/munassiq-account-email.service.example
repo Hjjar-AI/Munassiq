@@ -1,0 +1,13 @@
+[Unit]
+Description=Send Munassiq account emails
+After=network.target
+
+[Service]
+Type=oneshot
+User=munassiq
+WorkingDirectory=/absolute/path/munassiq
+EnvironmentFile=/absolute/path/munassiq/.env
+Environment=APP_LOG_NAME=account-email
+ExecStart=/bin/bash /absolute/path/munassiq/operations/scripts/run_management.sh send_account_emails
+UMask=0077
+NoNewPrivileges=true

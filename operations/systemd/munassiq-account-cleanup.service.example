@@ -1,0 +1,12 @@
+[Unit]
+Description=Munassiq account cleanup
+
+[Service]
+Type=oneshot
+User=munassiq
+WorkingDirectory=/absolute/path/munassiq
+EnvironmentFile=/absolute/path/munassiq/.env
+Environment=APP_LOG_NAME=account-cleanup
+ExecStart=/bin/bash /absolute/path/munassiq/operations/scripts/run_management.sh cleanup_accounts
+UMask=0077
+NoNewPrivileges=true

@@ -1,0 +1,10 @@
+[Unit]
+Description=Process the Munassiq account email queue each minute
+
+[Timer]
+OnBootSec=1min
+OnUnitInactiveSec=1min
+Unit=munassiq-account-email.service
+
+[Install]
+WantedBy=timers.target

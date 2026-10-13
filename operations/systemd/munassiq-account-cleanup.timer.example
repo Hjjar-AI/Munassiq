@@ -1,0 +1,10 @@
+[Unit]
+Description=Hourly cleanup of expired unverified Munassiq accounts
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+Unit=munassiq-account-cleanup.service
+
+[Install]
+WantedBy=timers.target
