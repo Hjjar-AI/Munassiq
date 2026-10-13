@@ -203,6 +203,17 @@ class ExportView(InputView):
         data['organizer_requests'] = list(OrganizerRequest.objects.filter(user=request.user).values(
             'id', 'name', 'workplace', 'reason', 'status', 'decision_reason', 'created_at', 'decided_at'))
         data['sessions'] = list(Session.objects.filter(user=request.user).values('created_at', 'expires_at', 'revoked_at'))
+        from catalog.models import Item, Registration, Report, Feedback, Reminder, OrganizerProfile
+        data['items'] = [{'id': item.pk, 'kind': item.kind, 'status': item.status,
+            'revisions': list(item.revisions.values('id', 'payload', 'created_at'))}
+            for item in Item.objects.filter(owner=request.user)]
+        data['registrations'] = list(Registration.objects.filter(user=request.user).values('id', 'occurrence_id', 'state', 'reconfirm_deadline'))
+        data['reports'] = list(Report.objects.filter(user=request.user).values('item_id', 'reason', 'text', 'resolution'))
+        from catalog.models import Asset
+        data['uploads'] = list(Asset.objects.filter(owner=request.user).values('id', 'kind', 'size', 'created_at'))
+        data['reminders'] = list(Reminder.objects.filter(user=request.user).values('occurrence_id', 'offset_minutes'))
+        data['organizer_profile'] = list(OrganizerProfile.objects.filter(user=request.user).values('bio', 'photo_id'))
+        data['feedback'] = list(Feedback.objects.filter(user=request.user).values('text', 'created_at'))
         response = Response(data)
         response['Content-Disposition'] = 'attachment; filename="munassiq-account.json"'
         response['Cache-Control'] = 'no-store'

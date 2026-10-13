@@ -1,4 +1,4 @@
-"""Idempotent account cleanup. Content stewardship must be added with content models."""
+"""Idempotent account cleanup, with directory stewardship and released seats."""
 import logging
 from datetime import timedelta
 from pathlib import Path
@@ -18,6 +18,8 @@ def remove_private_file(name):
 
 
 def delete_user(user):
+    from catalog.maintenance import prepare_account_deletion
+    prepare_account_deletion(user)
     names = list(OrganizerRequest.objects.filter(user=user).exclude(credential_name='').values_list('credential_name', flat=True))
     user.delete()
     for name in names:

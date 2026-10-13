@@ -4,7 +4,7 @@ import secrets
 import warnings
 from pathlib import Path
 from django.conf import settings
-from PIL import Image
+from PIL import Image, ImageOps
 from pypdf import PdfReader
 from rest_framework.exceptions import ValidationError
 
@@ -34,6 +34,7 @@ def validate_credential(upload):
                 image.verify()
             with Image.open(io.BytesIO(content)) as image:
                 image.load()
+                image = ImageOps.exif_transpose(image)
                 image.thumbnail((1600, 1600))
                 output = io.BytesIO()
                 image.convert('RGB').save(output, 'JPEG', quality=85)

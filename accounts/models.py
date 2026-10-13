@@ -31,7 +31,7 @@ class User(AbstractBaseUser):
         constraints = [models.UniqueConstraint(Lower('email'), name='account_email_case_unique')]
 
     def has_role(self, role):
-        return self.is_active and self.role_grants.filter(role=role).exists()
+        return self.is_active and self.role_grants.filter(role=role, user__is_active=True).exists()
 
 
 class RoleGrant(models.Model):

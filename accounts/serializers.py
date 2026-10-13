@@ -146,3 +146,11 @@ class ExportSerializer(UserSerializer):
     consents = serializers.ListField(child=serializers.DictField())
     organizer_requests = serializers.ListField(child=serializers.DictField())
     sessions = serializers.ListField(child=serializers.DictField())
+    items = serializers.ListField(child=serializers.DictField())
+    registrations = serializers.ListField(child=serializers.DictField())
+    reports = serializers.ListField(child=serializers.DictField())
+    feedback = serializers.ListField(child=serializers.DictField())
+    reminders = serializers.ListField(child=serializers.DictField())
+    organizer_profile = serializers.ListField(child=serializers.DictField())
+    uploads = serializers.ListField(child=serializers.DictField())
+

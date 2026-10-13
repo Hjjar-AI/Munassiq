@@ -271,7 +271,7 @@ class AccountTests(TestCase):
         self.assertEqual(self.client.get('/api/v1/moderation/organizer-requests/').status_code, 200)
         download = self.client.get(f'/api/v1/moderation/organizer-requests/{request_id}/credential/')
         self.assertEqual(download.status_code, 200)
-        download.close()
+        list(download.streaming_content)
         self.assertEqual(download['Cache-Control'], 'no-store')
 
     def test_review_lock_approval_deletes_document_and_grants_role(self):

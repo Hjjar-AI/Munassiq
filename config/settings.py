@@ -33,9 +33,10 @@ PRIVATE_CREDENTIAL_ROOT = RUNTIME_ROOT / "private_credentials"
 STATIC_ROOT = RUNTIME_ROOT / "static"
 # Directories are prepared by an explicit script, not by importing settings.
 DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3",
-    "NAME": RUNTIME_ROOT / "database.sqlite3", "OPTIONS": {"timeout": 20, "transaction_mode": "IMMEDIATE"}}}
+    "NAME": RUNTIME_ROOT / "database.sqlite3",
+    "TEST": {"NAME": str(RUNTIME_ROOT / "test.sqlite3")}, "OPTIONS": {"timeout": 20, "transaction_mode": "IMMEDIATE"}}}
 INSTALLED_APPS = ["django.contrib.auth", "django.contrib.contenttypes", "django.contrib.staticfiles",
-    "rest_framework", "drf_spectacular", "core", "accounts"]
+    "rest_framework", "drf_spectacular", "core", "accounts", "catalog"]
 AUTH_USER_MODEL = "accounts.User"
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.Argon2PasswordHasher"]
 MIDDLEWARE = ["core.middleware.ClientAddressMiddleware", "django.middleware.security.SecurityMiddleware",
@@ -112,3 +113,5 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024
 FILE_UPLOAD_HANDLERS = ["accounts.uploads.SizeLimitHandler",
     "django.core.files.uploadhandler.MemoryFileUploadHandler",
     "django.core.files.uploadhandler.TemporaryFileUploadHandler"]
+
+EXPORT_FONT_PATH = os.environ.get("EXPORT_FONT_PATH", "")
