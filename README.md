@@ -13,8 +13,9 @@ rescheduling/reconfirmation, media, search, map-marker data, reports/feedback,
 organizer profiles, calendar files and CSV/PDF exports are now implemented too.
 The notification backend adds FCM queue/retries, follows, preferences,
 announcements/banners, public app settings and admin statistics. Real Firebase
-and phone delivery remain unverified. The dashboard, Android app, weekly backup
-and restore implementation remain future milestones.
+and phone delivery remain unverified. A server-rendered Arabic/English dashboard
+now exposes account, organizer, moderation and admin workflows. Android, weekly
+backup/restore and production HTTPS deployment remain future milestones.
 
 ## Local setup (Linux, Python 3.10+)
 
@@ -70,10 +71,12 @@ Starts the local development server. Visit:
 - `http://127.0.0.1:8000/api/v1/health/`: expect `{"status":"ok","service":"munassiq"}`.
 - `http://127.0.0.1:8000/api/v1/docs/`: interactive API documentation.
 - `http://127.0.0.1:8000/api/v1/policies/current/`: current bilingual terms/privacy.
+- `http://127.0.0.1:8000/dashboard/`: Arabic/English browser dashboard.
 
 The health response proves only that the API answers, not SMTP or push delivery.
 Press Ctrl+C to stop. API paths include a trailing slash; use the displayed paths.
-The documentation UI currently uses CDN assets. The unfinished dashboard has no route.
+The API documentation UI currently uses CDN assets. Dashboard CSS/JavaScript is local.
+See [dashboard screens and verification limits](docs/dashboard.md).
 
 ## Try accounts using API documentation
 
@@ -118,7 +121,7 @@ and cleanup hourly; they are not installed or activated automatically.
 
 ```bash
 bash operations/scripts/run_management.sh check
-bash operations/scripts/run_management.sh test core accounts catalog notifications --noinput
+bash operations/scripts/run_management.sh test core accounts catalog notifications dashboard --noinput
 ```
 `check` examines Django configuration. `test` creates and destroys a separate test
 database in `runtime/test.sqlite3`, exercising security rules, API endpoints and

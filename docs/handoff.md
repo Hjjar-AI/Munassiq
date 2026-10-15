@@ -6,9 +6,10 @@ snapshot, not an automatic guarantee about subsequent edits.
 
 ## Where the project stands
 
-Milestones 1–4 have backend implementations. This is an API development milestone,
-not a finished app or production deployment. There is no functional dashboard or
-Android app. Next implementation milestone: the web dashboard. Notification
+Milestones 1–4 have backend implementations; milestone 5 now has a server-rendered
+dashboard and public fallback pages. This is not a finished Android app or production
+deployment. Next implementation milestone: Android, alongside remaining deployment
+and browser verification. Dashboard behavior/limits are in `dashboard.md`. Notification
 backend setup/policies are in `notifications.md`; real FCM/phone integration is
 unverified. The initial handoff was documentation-only; subsequent milestone 4
 added source, requested migrations and tests, without builds or deployment.
@@ -25,15 +26,15 @@ they exist on a remote.
 | Accounts | Email/password, Argon2, signup consent, verification/reset/email change, revocable rotating sessions, logout-all, bans/roles, first admin command | Real SMTP/inbox delivery unverified |
 | Policies | Versioned bilingual placeholders, API admin editing | Needs owner review and dashboard editor |
 | Organizer applications | Private 5 MB credentials, one open request, locks/decision, credential deletion | Backup exclusion strategy not implemented as a backup script |
-| Audit | Server-side staff action records and admin read API | No dashboard audit viewer |
-| Content | Event/service APIs, reviewed revisions, lock/approval/rejection, hide/delete/restore, duplicate templates/check | No creation/review user interface |
+| Audit | Server-side staff records, admin read API and dashboard viewer | Metadata labels need final localization review |
+| Content | Event/service APIs and dashboard forms/review/locks/hide/delete/restore/templates | Real browser presentation/interaction not verified |
 | Registration | Four states, capacity transactions, FIFO promotion, overlap warning, cutoff, series signup, required-reason removal, reschedule/reconfirm | Configured worker attempts push; real delivery unverified |
 | Archive/deletion | Local-midnight archive/snapshots, staff corrections, repeatable three-day purge, shared-file preservation | Timers are not installed |
 | Files | Validated/resized images, private draft access, PDFs, profile photos | Real phone/external PDF viewer unverified; no malware scanner |
-| Directory | Search normalization, hours/open-now, filters, marker API, venues and linked events | No visible map, clustering or device quick actions |
+| Directory | Search/hours/filters/venue APIs; dashboard map, clusters, quick actions | Interactive maps/share need real browser verification |
 | Locations | Syria seed: 10,816 GeoNames places, stable IDs, searchable picker API, admin corrections | 756 English fallback names; source completeness/quality needs review |
-| Organizer tools | Public profile/events API, own items, per-occurrence stats/roster and CSV/PDF export | PDF needs configured Arabic-capable font; client screens missing |
-| Reports/feedback | Submit, staff list and report resolution; warning notification intent | No staff interface or delivered warning push |
+| Organizer tools | Profile/events, own items, stats/roster/CSV/PDF API and dashboard screens | PDF needs configured Arabic font; Android screens missing |
+| Reports/feedback | API and dashboard submission/handling, warning intent | Actual push remains unverified |
 | Calendar/views/reminders | ICS download, approximate daily view counts, reminder offsets/delivery worker | No phone calendar integration; real delivery unverified |
 | Notifications | Devices, preferences, quiet-hour metadata, essential/optional types, follows/digests, announcements/banners, retries, bans, settings/stats APIs | Disabled until Firebase configured; Android channels/receipt behavior missing |
 | Operations | .env.example, run scripts, systemd service/timer examples, job run logging | No Nginx/certificate/backup/restore implementation or active services |
@@ -61,6 +62,9 @@ Source map:
 - `backend/notifications/`: models and APIs for devices/preferences/follows,
   announcements/settings/stats, queue generation, FCM adapter, delivery worker.
   `send_notifications` is the separate minute-by-minute job; see notifications.md.
+- `backend/dashboard/`: cookie/session middleware, fixed local API bridge,
+  serializer-derived HTML forms, role-specific views/templates, CSS/JavaScript,
+  manual map selection and marker clustering. No model or migration was added.
 - `operations/scripts/`: runtime preparation, management/dev/server helpers,
   offline GeoNames converter. `operations/systemd/`: examples only.
 - `docs/accounts.md`, `catalog.md`, `locations.md`: detailed existing API behavior.
@@ -86,20 +90,23 @@ Source map:
 - [ ] Configure real Firebase and verify receipt, channels, foreground/background,
   quiet hours, expired tokens and retries on the actual Android app.
 
-### Milestone 5: web dashboard
+### Milestone 5: dashboard source implemented; browser QA remains
 
-- [ ] Arabic/English server-rendered RTL navigation, authentication/session/CSRF
+- [x] Arabic/English server-rendered RTL navigation, authentication/session/CSRF
   integration, permission-based tools, error messages and accessibility.
-- [ ] Organizer content creation/editing/resubmission, uploads, map picking,
+- [x] Organizer content creation/editing/resubmission, uploads, map picking,
   recurrence, own statuses, cancel/reschedule, roster/removal/CSV/PDF and stats.
-- [ ] Moderator queues/locks/decisions, organizer credentials, reports, feedback,
+- [x] Moderator queues/locks/decisions, organizer credentials, reports, feedback,
   category management, archived corrections, hide/delete/restore/stewardship.
-- [ ] Admin accounts/roles/bans, audit, statistics, settings, policy editing,
+- [x] Admin accounts/roles/bans, audit, statistics, settings, policy editing,
   locations, announcement sending and review unlock.
-- [ ] Public event fallback/deep-link pages and APK download link, category and
+- [x] Public event fallback pages and configured APK link, category lists/events and
   organizer public pages. Account email-link confirmation page already exists.
 - [ ] Check UI localization coverage separately from Django language settings;
   those settings do not prove all existing API errors are translated.
+- [ ] Real browser QA: RTL/LTR/mobile layout, map tiles/clusters/city lookup,
+  asynchronous uploads, downloads/share/clipboard and accessibility.
+- [ ] Android deep-link handoff is still pending the Android app implementation.
 
 ### Milestone 6: Android — entire app remains
 
@@ -172,10 +179,10 @@ Open or implementation-specific choices requiring review before dependent work:
 
 ## Verification and environment — do not overstate
 
-Milestone-4 full run: 131 tests passed, including the prior registration races and
-24 new notification tests. Configuration, migration drift, OpenAPI validation and
-lightweight syntax/whitespace checks passed. A subsequent zero-minute reminder
-boundary change has its own targeted verification recorded in work-log.md.
+Milestone-5 full run: 153 tests passed (including 21 dashboard tests, prior
+notification coverage and registration races). Configuration/OpenAPI validation
+passed. No dashboard migration/model was introduced. Lightweight syntax checks
+and historical milestone-4 migration drift checks are recorded in work-log.md.
 This is historical evidence, not a guarantee about later source changes.
 
 Supplied migrations were exercised in temporary databases only. Full Syria seed
@@ -227,7 +234,8 @@ and verify a complete copy first. This handoff does not change the Git layout.
 
 > Continue Munassiq from this existing workspace. Read original.propmpt.md and
 > docs/handoff.md, docs/plan.md and docs/work-log.md first, then verify current
-> source and both Git statuses. Backend milestones 1–4 exist; next is milestone
-> 5 web dashboard, with real Firebase integration still pending. Preserve confirmed decisions and local
+> source and both Git statuses. Backend milestones 1–4 and dashboard milestone 5
+> exist; next is Android. Real browser/Firebase/production integration is still
+> pending. Preserve confirmed decisions and local
 > backend commits. Do not restart, flatten Git, deploy, or run builds. Ask about
 > unresolved dependent policies, and follow my current AGENTS.md restrictions.

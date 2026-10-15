@@ -7,7 +7,9 @@ The consolidated target requirements are in [the updated prompt](../original.pro
 - Verify real milestone-4 integration: configure Firebase and check delivery,
   invalid tokens, quiet-hour channels and foreground/background behavior with Android.
   Worker/APIs, follows/digests, announcements and settings/stats source exists.
-- Build milestone 5: role-specific Arabic/English dashboard, share/fallback pages and account UI.
+- Verify dashboard in a real browser: responsive RTL/LTR, maps/city lookup,
+  uploads/share/downloads, accessibility and complete Arabic validation copy.
+  Server-rendered role tools, account UI and public fallback pages are implemented.
 - Build milestone 6: native Android, maps/clustering, Room cache, calendar/share, APK updates.
 - Add Nginx/self-signed HTTPS configuration and verify real SMTP/FCM before launch.
 - Add weekly backup/restore scripts, credential exclusions and deletion replay.

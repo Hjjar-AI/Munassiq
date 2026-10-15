@@ -89,3 +89,27 @@
   No production database changes, real push, deployment,
   compilation, builds, packaging or Gradle ran. Firebase/Android channel/receipt
   integration, dashboard, backup/restore and Android implementation remain pending.
+
+## 2026-10-15 — web dashboard milestone
+- Added server-rendered Arabic/English RTL/LTR browsing/account/organizer/staff
+  dashboard, public event/service fallbacks, configured APK links, profiles and
+  category event filters. No dashboard model or migration was introduced.
+- Added fixed local API dispatch, HttpOnly session cookies/rotation, CSRF-protected
+  forms and confirmation pages, private downloads, role/IP guards and no-store
+  responses. APIs remain bearer-only; no browser tokens appear in page scripts.
+- Added human-readable content forms, local-date conversion, image/PDF handling,
+  service hours, searchable country/city choices, duplicate warning confirmation,
+  manual OpenStreetMap picker, service clusters and existing-item management.
+- Connected review locks/decisions, applications/credentials, reports/feedback,
+  rosters/exports, admin users/roles/bans/audit/settings/stats/policies/announcements.
+- Fixed evidenced current-policy failure with multiple policy versions; signup
+  now rejects consent to an outdated displayed version. Allowed audited reviewer
+  attachment uploads for corrections without granting item-creation privileges.
+- All 153 tests passed, including 21 dashboard integration/security/workflow cases.
+  Configuration/OpenAPI checks passed. Python AST, JavaScript parse-only and
+  whitespace checks passed; no builds, compilation, packaging or Gradle ran.
+- The final coincident-marker link list and preserving stricter response referrer
+  policy received source checks; no browser runtime verification. No supported
+  preview/browser tool was available. Layout/RTL/mobile/a11y/maps/share/async file
+  UX and complete Arabic server-error copy remain acceptance work. Production
+  deployment, real SMTP/FCM, Android and backup/restore remain pending.
