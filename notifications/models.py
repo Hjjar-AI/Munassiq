@@ -85,6 +85,7 @@ class AppSettings(models.Model):
     singleton = models.PositiveSmallIntegerField(primary_key=True, default=1)
     support_email = models.EmailField(blank=True)
     apk_download_url = models.URLField(blank=True)
+    apk_version_code = models.PositiveIntegerField(default=0)
     guide_ar = models.TextField(blank=True)
     guide_en = models.TextField(blank=True)
 

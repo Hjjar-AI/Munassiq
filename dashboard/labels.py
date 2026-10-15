@@ -36,6 +36,7 @@ LABELS = {
     'privacy_ar':('الخصوصية بالعربية','Arabic privacy'), 'privacy_en':('الخصوصية بالإنجليزية','English privacy'),
     'action':('الإجراء','Action'), 'image_files':('صور جديدة','New photos'), 'pdf_file':('ملف PDF اختياري','Optional PDF'),
     'photo_file':('الصورة الشخصية','Profile photo'),
+    'apk_version_code':('رقم إصدار تطبيق أندرويد','Android version code'),
 }
 CHOICES = {
     'ar':('العربية','Arabic'), 'en':('الإنجليزية','English'), 'personal':('شخصية','Personal'),

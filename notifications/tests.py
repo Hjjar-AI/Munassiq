@@ -209,9 +209,11 @@ class NotificationTests(FixtureMixin, TestCase):
         self.assertTrue(Delivery.objects.filter(dispatch__notice=notice).exists())
         now = datetime(2026,10,15,20,tzinfo=dt_timezone.utc)
         message = payload(notice,device,pref,now,now+timedelta(hours=1))
-        self.assertEqual(message['android']['notification']['channel_id'],'munassiq_silent')
+        self.assertNotIn('notification',message)
+        self.assertNotIn('notification',message['android'])
         self.assertEqual(message['data']['silent'],'true')
-        self.assertIn('أُلغيت',message['notification']['title'])
+        self.assertIn('أُلغيت',message['data']['title'])
+        self.assertIn('expires_at',message['data'])
         self.assertFalse(quiet_now(pref,now+timedelta(hours=12)))
 
     def test_export_has_follows_and_device_metadata_but_no_raw_token(self):
@@ -289,6 +291,24 @@ class NotificationTests(FixtureMixin, TestCase):
         response = self.client.put(f'/api/v1/occurrences/{item.occurrences.get().pk}/reminder/',
             {'offset_minutes':0},format='json')
         self.assertEqual(response.status_code,400)
+
+    def test_android_update_version_metadata_is_public_but_only_admin_editable(self):
+        self.signin(self.user)
+        self.assertEqual(self.client.patch('/api/v1/admin/app-settings/',{'apk_version_code':2},format='json').status_code,403)
+        self.signin(self.admin)
+        result=self.client.patch('/api/v1/admin/app-settings/',{'apk_version_code':2,'apk_download_url':'https://example.org/app.apk'},format='json')
+        self.assertEqual(result.status_code,200,result.data)
+        self.client.credentials()
+        self.assertEqual(self.client.get('/api/v1/app-settings/').data['apk_version_code'],2)
+
+    def test_item_push_contains_kind_for_android_deep_link(self):
+        item=self.approved('service')
+        device=self.device()
+        notice=Notice.objects.create(user=self.user,kind='item.approved',metadata={'item_id':item.pk})
+        pref=Preferences.objects.create(user=self.user)
+        now=timezone.now()
+        message=payload(notice,device,pref,now,now+timedelta(hours=1))
+        self.assertEqual(message['data']['item_kind'],'service')
 
     def test_retry_budget_stops_after_six_attempts(self):
         self.device()

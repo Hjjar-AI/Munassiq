@@ -100,7 +100,7 @@ class AppSettingsSerializer(serializers.ModelSerializer):
     guide_en = serializers.CharField(max_length=10000, allow_blank=True, required=False)
     class Meta:
         model = AppSettings
-        fields = ['support_email', 'apk_download_url', 'guide_ar', 'guide_en']
+        fields = ['support_email', 'apk_download_url', 'apk_version_code', 'guide_ar', 'guide_en']
 
     def validate_apk_download_url(self, value):
         if value and not value.startswith('https://'):

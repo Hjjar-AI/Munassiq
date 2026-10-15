@@ -40,19 +40,24 @@ def payload(notice, device, pref, now, expires_at):
     silent = quiet_now(pref, now)
     data = {'notice_id': str(notice.pk), 'kind': notice.kind, 'silent': str(silent).lower(),
         'time_zone': pref.time_zone, 'quiet_start': str(pref.quiet_start or ''),
-        'quiet_end': str(pref.quiet_end or '')}
+        'quiet_end': str(pref.quiet_end or ''), 'title': title, 'body': body,
+        'expires_at': expires_at.isoformat()}
     for key in ('item_id', 'occurrence_id', 'registration_id', 'announcement_id'):
         if notice.metadata.get(key) is not None:
             data[key] = str(notice.metadata[key])
+    if data.get('item_id'):
+        item = Item.objects.filter(pk=data['item_id']).first()
+        if item:
+            data['item_kind'] = item.kind
     if notice.kind == 'event.digest':
         events = [row.pk for row in Item.objects.filter(pk__in=notice.metadata.get('item_ids', []))
             if public_upcoming(row, now) and event_still_followed(notice.user_id, row)]
         data['item_ids'] = json.dumps(events[:20])
         data['count'] = str(len(events))
-    return {'token': device.token, 'notification': {'title': title, 'body': body}, 'data': data,
-        'android': {'priority': 'high', 'ttl': f'{max(0, int((expires_at-now).total_seconds()))}s',
-            'notification': {'channel_id': 'munassiq_silent' if silent else 'munassiq_default',
-                'tag': 'munassiq-'+str(notice.pk)}}}
+    # Data-only messages let Android enforce quiet hours at receipt, rather than
+    # letting FCM auto-display a channel chosen before a delayed delivery.
+    return {'token': device.token, 'data': data,
+        'android': {'priority': 'high', 'ttl': f'{max(0, int((expires_at-now).total_seconds()))}s'}}
 
 
 def expand_notices(limit=200):
