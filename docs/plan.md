@@ -1,4 +1,9 @@
 # Remaining work
+
+Read [the detailed handoff](handoff.md) for the feature-by-feature remaining
+checklist, source map, unresolved decisions, Git handling and verification limits.
+The consolidated target requirements are in [the updated prompt](../original.propmpt.md).
+
 - Implement milestone 4: delivery worker, FCM devices/retries, user preferences/quiet hours,
   follows/digests, announcements, app settings and admin-wide statistics.
 - Build milestone 5: role-specific Arabic/English dashboard, share/fallback pages and account UI.

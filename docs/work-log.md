@@ -57,3 +57,13 @@
   whitespace checks passed. Requested migrations were exercised in temporary databases.
 - Push delivery, dashboard, Android, actual SMTP/HTTPS and scheduled service deployment
   remain unfinished or unverified. No builds, compilation, packaging or Gradle ran.
+
+## 2026-10-15 — continuation handoff
+- Filled original.propmpt.md with consolidated requirements and confirmed later
+  decisions, distinguishing implementation policies and undecided behavior.
+- Added docs/handoff.md with source/status map, detailed missing-feature checklist,
+  unresolved questions, historical verification limits and new-agent instructions.
+- Explained why the existing backend became a submodule, the two-commit workflow
+  and risk of unpublished backend commits being absent from a remote clone.
+- Linked handoff from README and plan. Documentation only; no application source,
+  migrations, test suite, builds, repository layout or deployment changed.

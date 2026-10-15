@@ -199,6 +199,10 @@ APK install/update instructions will arrive with the Android milestone.
 
 ## Work records and Git
 
+For a new conversation or agent, start with [docs/handoff.md](docs/handoff.md)
+and the [updated project prompt](original.propmpt.md). The handoff distinguishes
+implemented APIs from missing clients/delivery/deployment and explains both Git repositories.
+
 Remaining work is in [docs/plan.md](docs/plan.md); completed work and verification
 limits are in [docs/work-log.md](docs/work-log.md).
 The existing backend Git repository is preserved and recorded as the root repository's
