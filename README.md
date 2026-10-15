@@ -11,8 +11,10 @@ organizer applications, review locks and audit records.
 Events/services, reviewed revisions, recurrence, registration/waitlists,
 rescheduling/reconfirmation, media, search, map-marker data, reports/feedback,
 organizer profiles, calendar files and CSV/PDF exports are now implemented too.
-The dashboard, push notifications/follows/announcements, Android app, weekly
-backup and restore implementation remain future milestones.
+The notification backend adds FCM queue/retries, follows, preferences,
+announcements/banners, public app settings and admin statistics. Real Firebase
+and phone delivery remain unverified. The dashboard, Android app, weekly backup
+and restore implementation remain future milestones.
 
 ## Local setup (Linux, Python 3.10+)
 
@@ -116,7 +118,7 @@ and cleanup hourly; they are not installed or activated automatically.
 
 ```bash
 bash operations/scripts/run_management.sh check
-bash operations/scripts/run_management.sh test core accounts catalog --noinput
+bash operations/scripts/run_management.sh test core accounts catalog notifications --noinput
 ```
 `check` examines Django configuration. `test` creates and destroys a separate test
 database in `runtime/test.sqlite3`, exercising security rules, API endpoints and
@@ -167,8 +169,9 @@ bash operations/scripts/run_management.sh run_content_jobs
 ```
 
 Runs archive, reconfirmation-expiry, promotion and three-day deletion work once.
-Push notifications are not delivered yet; the backend records durable intents for
-the notification milestone. The content-job timer examples are not activated automatically.
+Notification delivery uses the separate `send_notifications` command after Firebase
+configuration; see [notification setup and policies](docs/notifications.md).
+The content-job timer examples are not activated automatically.
 
 ## Production operation is still pending
 

@@ -100,7 +100,7 @@ items are removed. Account export includes owned revision payloads, registration
 reminders, reports/feedback, profile and uploaded-media metadata; credentials and
 security secrets are excluded.
 
-Notification intents are not delivered as push yet. Reminder delivery, follows,
-announcements and FCM retries are the next milestone. Web share/fallback pages and
+Delivery now uses the separately configured worker in [notifications.md](notifications.md).
+Firebase is disabled by default and actual phone delivery remains unverified. Web share/fallback pages and
 APK links arrive with the dashboard/Android milestones. No production HTTPS, real
 SMTP/FCM, scheduled service installation or Android runtime has been verified.

@@ -199,8 +199,12 @@ Admin announcement push plus in-app banner to everyone by default, organizers
 only, or country/city segment. Configurable few-per-day admin limit, user mute.
 Design bounded retries, invalid-token removal, deduplication and missed-reminder
 expiry/recovery; document delivery limitations. Ban must suppress all push.
-No worker/device/follow/announcement implementation exists yet; Notice rows are
-durable intents only and saved reminders do not currently send notifications.
+The server now implements the worker/device/follow/announcement APIs and reminder
+generation; Firebase remains disabled until configured, with real phone delivery
+unverified. Essential pushes cannot be muted. Approved defaults: digest at 09:00
+local, banners seven days, three announcements per admin per UTC day (configurable).
+Missed reminders expire one hour after due time or at start, whichever is first;
+other occurrence messages expire at start or after 24 hours, whichever is first.
 
 ## Android
 

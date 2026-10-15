@@ -6,14 +6,16 @@ snapshot, not an automatic guarantee about subsequent edits.
 
 ## Where the project stands
 
-Milestones 1–3 have backend implementations. This is an API development milestone,
+Milestones 1–4 have backend implementations. This is an API development milestone,
 not a finished app or production deployment. There is no functional dashboard or
-Android app. Next implementation milestone: notifications/follows/announcements.
-The latest task was documentation only; no tests, migration inspection, builds or
-deployment were performed for this handoff.
+Android app. Next implementation milestone: the web dashboard. Notification
+backend setup/policies are in `notifications.md`; real FCM/phone integration is
+unverified. The initial handoff was documentation-only; subsequent milestone 4
+added source, requested migrations and tests, without builds or deployment.
 
-Repository at handoff: root `1e0fd94`, backend `9212104` before this documentation
-update. These commits are local; do not assume they exist on a remote.
+Historical milestone-3 revisions: root `1e0fd94`, backend `9212104`. Inspect current
+Git logs/status for newer milestone-4 commits. Commits are local; do not assume
+they exist on a remote.
 
 ## Existing source and behavior
 
@@ -25,14 +27,15 @@ update. These commits are local; do not assume they exist on a remote.
 | Organizer applications | Private 5 MB credentials, one open request, locks/decision, credential deletion | Backup exclusion strategy not implemented as a backup script |
 | Audit | Server-side staff action records and admin read API | No dashboard audit viewer |
 | Content | Event/service APIs, reviewed revisions, lock/approval/rejection, hide/delete/restore, duplicate templates/check | No creation/review user interface |
-| Registration | Four states, capacity transactions, FIFO promotion, overlap warning, cutoff, series signup, required-reason removal, reschedule/reconfirm | Push side effects are intents only |
+| Registration | Four states, capacity transactions, FIFO promotion, overlap warning, cutoff, series signup, required-reason removal, reschedule/reconfirm | Configured worker attempts push; real delivery unverified |
 | Archive/deletion | Local-midnight archive/snapshots, staff corrections, repeatable three-day purge, shared-file preservation | Timers are not installed |
 | Files | Validated/resized images, private draft access, PDFs, profile photos | Real phone/external PDF viewer unverified; no malware scanner |
 | Directory | Search normalization, hours/open-now, filters, marker API, venues and linked events | No visible map, clustering or device quick actions |
 | Locations | Syria seed: 10,816 GeoNames places, stable IDs, searchable picker API, admin corrections | 756 English fallback names; source completeness/quality needs review |
 | Organizer tools | Public profile/events API, own items, per-occurrence stats/roster and CSV/PDF export | PDF needs configured Arabic-capable font; client screens missing |
 | Reports/feedback | Submit, staff list and report resolution; warning notification intent | No staff interface or delivered warning push |
-| Calendar/views/reminders | ICS download, approximate daily view counts, reminder offset storage | No phone calendar integration; no reminder delivery |
+| Calendar/views/reminders | ICS download, approximate daily view counts, reminder offsets/delivery worker | No phone calendar integration; real delivery unverified |
+| Notifications | Devices, preferences, quiet-hour metadata, essential/optional types, follows/digests, announcements/banners, retries, bans, settings/stats APIs | Disabled until Firebase configured; Android channels/receipt behavior missing |
 | Operations | .env.example, run scripts, systemd service/timer examples, job run logging | No Nginx/certificate/backup/restore implementation or active services |
 
 Source map:
@@ -55,29 +58,33 @@ Source map:
   `/api/v1/`; route source is authoritative, not invented endpoint names.
 - `backend/catalog/files.py`, `exports.py`, `search.py`: media, roster output,
   Arabic/English normalization. `data/` contains locations and attribution.
+- `backend/notifications/`: models and APIs for devices/preferences/follows,
+  announcements/settings/stats, queue generation, FCM adapter, delivery worker.
+  `send_notifications` is the separate minute-by-minute job; see notifications.md.
 - `operations/scripts/`: runtime preparation, management/dev/server helpers,
   offline GeoNames converter. `operations/systemd/`: examples only.
 - `docs/accounts.md`, `catalog.md`, `locations.md`: detailed existing API behavior.
 
 ## Remaining work — implementation checklist
 
-### Milestone 4: notifications, follows, announcements
+### Milestone 4: backend implemented; integration remains
 
-- [ ] Device registration/revocation endpoints and FCM credentials through config.
-- [ ] Delivery worker consuming Notice intents; record attempts, deduplicate,
+- [x] Device registration/revocation endpoints and FCM credentials through config.
+- [x] Delivery worker consuming Notice intents; record attempts, deduplicate,
   bound retries/backoff, remove expired tokens, handle expired/missed reminders.
-- [ ] Ensure account bans/deletion suppress delivery, including already queued work.
-- [ ] Generate due reminder intents idempotently; handle rescheduling/cancellation.
-- [ ] Organizer/category follow models/APIs, instant new-event delivery and daily
+- [x] Ensure account bans/deletion suppress delivery, including already queued work.
+- [x] Generate due reminder intents idempotently; handle rescheduling/cancellation.
+- [x] Organizer/category follow models/APIs, instant new-event delivery and daily
   digest grouping, deduplication when both organizer/category are followed.
-- [ ] User preferences: push categories, locale/time zone, quiet hours, digest
+- [x] User preferences: optional push types, locale/time zone, quiet hours, digest
   choice, announcement mute; define correct cross-midnight behavior.
-- [ ] Announcements: audiences, country/city filtering, banner API and expiry,
+- [x] Announcements: audiences, country/city filtering, banner API and expiry,
   configurable daily sending limit, admin authorization and audit.
-- [ ] App-settings/admin-wide user/event/report statistics endpoints.
-- [ ] Complete required tests for new endpoints, permissions, delivery/job retry
-  behavior, suppression and duplicate runs when test work is authorized.
-- [ ] Document notification meaning without inventing guaranteed delivery.
+- [x] App-settings/admin-wide user/event/report statistics endpoints.
+- [x] New endpoint/permission/queue tests, suppression/retry/duplicate-run coverage.
+- [x] Document notification meaning without inventing guaranteed delivery.
+- [ ] Configure real Firebase and verify receipt, channels, foreground/background,
+  quiet hours, expired tokens and retries on the actual Android app.
 
 ### Milestone 5: web dashboard
 
@@ -153,9 +160,11 @@ Open or implementation-specific choices requiring review before dependent work:
   Clarify intended relationship to in-app registration if changing that behavior.
 - After organizer-role removal, may the user immediately apply again? Rejected
   applications already allow immediate reapplication; these are different cases.
-- Which transactional notification types can be muted? Ban suppression is fixed.
-- Exact reminder retry/missed-delivery policy, quiet-hour handling, digest schedule
-  and announcement expiry/default daily cap still need a concrete proposal.
+- Notification decisions confirmed: essential lifecycle/moderation pushes always
+  enabled; digest 09:00 local; banners seven days; three announcements per admin
+  per UTC day (configurable). Missed reminder expiry one hour after due, never
+  after start; other occurrence pushes expire at start or after 24 hours.
+  Quiet hours deliver silently rather than defer; client channel behavior awaits Android.
 - Android minimum version remains undecided. Android 7+ is a candidate, not a
   confirmed decision. No Android certificate implementation currently exists.
 - Recurrence limit 52, skipping invalid monthly dates and rejecting DST ambiguity
@@ -163,11 +172,10 @@ Open or implementation-specific choices requiring review before dependent work:
 
 ## Verification and environment — do not overstate
 
-Last full run: 106 tests passed, including three real two-connection SQLite race
-tests. After the last attachment permission change three targeted tests passed,
-one newly added; all 107 tests were **not** rerun together. Django checks, OpenAPI
-validation, migration drift and lightweight syntax/whitespace checks passed in
-the preceding implementation task. No tests were rerun for this documentation.
+Milestone-4 full run: 131 tests passed, including the prior registration races and
+24 new notification tests. Configuration, migration drift, OpenAPI validation and
+lightweight syntax/whitespace checks passed. A subsequent zero-minute reminder
+boundary change has its own targeted verification recorded in work-log.md.
 This is historical evidence, not a guarantee about later source changes.
 
 Supplied migrations were exercised in temporary databases only. Full Syria seed
@@ -219,7 +227,7 @@ and verify a complete copy first. This handoff does not change the Git layout.
 
 > Continue Munassiq from this existing workspace. Read original.propmpt.md and
 > docs/handoff.md, docs/plan.md and docs/work-log.md first, then verify current
-> source and both Git statuses. Backend milestones 1–3 exist; next is milestone
-> 4 notifications/follows/announcements. Preserve confirmed decisions and local
+> source and both Git statuses. Backend milestones 1–4 exist; next is milestone
+> 5 web dashboard, with real Firebase integration still pending. Preserve confirmed decisions and local
 > backend commits. Do not restart, flatten Git, deploy, or run builds. Ask about
 > unresolved dependent policies, and follow my current AGENTS.md restrictions.

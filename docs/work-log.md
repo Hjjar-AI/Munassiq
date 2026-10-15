@@ -67,3 +67,25 @@
   and risk of unpublished backend commits being absent from a remote clone.
 - Linked handoff from README and plan. Documentation only; no application source,
   migrations, test suite, builds, repository layout or deployment changed.
+
+## 2026-10-15 — notification backend milestone
+- Added private session-bound device registration/rotation, user preferences,
+  organizer/category follows, first-publication deduplication and local daily digests.
+- Added due-reminder generation, FCM HTTP v1 OAuth adapter, durable per-device
+  attempts/retries/expiry, invalid-token cleanup and ban/logout suppression.
+- Added bilingual segmented announcements/banners, configurable daily admin cap,
+  public app settings and audited admin-wide statistics APIs; supplied migrations
+  and optional notification service/timer examples, not installed.
+- User confirmed essential pushes always enabled; digest 09:00 local, banners
+  seven days, three announcements per admin per day (UTC implementation), reminder
+  grace one hour bounded by start, other occurrence messages start/24-hour expiry.
+- Installed new dependencies as prebuilt wheels only; configuration, migration
+  drift and OpenAPI validation passed. Full core/account/catalog/notification run
+  passed 131 tests, including 24 notification tests and existing registration races.
+- Subsequent source review rejected zero-minute reminders, which cannot deliver
+  under the approved expiry rule. Two targeted tests passed (the new boundary and
+  existing reminder/reschedule flow); the complete 132-test suite was not rerun.
+  Python AST, shell syntax, Markdown links and whitespace checks passed.
+  No production database changes, real push, deployment,
+  compilation, builds, packaging or Gradle ran. Firebase/Android channel/receipt
+  integration, dashboard, backup/restore and Android implementation remain pending.

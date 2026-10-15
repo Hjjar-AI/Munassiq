@@ -1,0 +1,14 @@
+[Unit]
+Description=Munassiq notification delivery
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=munassiq
+WorkingDirectory=/absolute/path/munassiq
+EnvironmentFile=/absolute/path/munassiq/.env
+Environment=APP_LOG_NAME=notifications
+ExecStart=/bin/bash /absolute/path/munassiq/operations/scripts/run_management.sh send_notifications
+UMask=0077
+NoNewPrivileges=true

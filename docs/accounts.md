@@ -23,7 +23,8 @@ Bearer sessions store only token hashes. Refresh rotates tokens within a write
 transaction. Revoked, expired or banned sessions cannot access protected endpoints.
 Banned login with correct credentials returns the ban reason; incorrect credentials
 return the generic failure. Bans retain account records and revoke sessions.
-Stopping push for banned users will be implemented with push delivery in milestone 4.
+Bans now suppress queued pushes and remove devices; unban does not replay old
+notifications. See [notification behavior](notifications.md).
 
 ## Organizer applications
 
@@ -40,7 +41,8 @@ attachment downloads. Server directories must already be prepared by the helper.
 Review queue displays the lock holder's name. Claim is atomic; only the holder can
 decide. Locks do not expire automatically; an admin can unlock. Approval grants
 organizer and rejection leaves roles unchanged. Documents are removed after the
-committed decision. Email queues the decision; push notifications are a later milestone.
+committed decision. Decisions queue bilingual email and an essential push intent;
+the configured notification worker attempts delivery.
 
 ## Data deletion and export
 
