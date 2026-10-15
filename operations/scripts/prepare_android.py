@@ -12,6 +12,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config', type=Path, default=ROOT/'android/deployment.properties')
     parser.add_argument('--output', type=Path, default=ROOT/'android/app/src/deployment')
+    parser.add_argument('--validation', action='store_true', help='Label this as a non-connecting build for compilation/UI checks')
     args = parser.parse_args()
     values = {}
     for line in args.config.read_text().splitlines():
@@ -52,7 +53,7 @@ def main():
     tiles = values.get('maps.tiles','')
     if tiles and not tiles.startswith('https://'): raise SystemExit('Map tiles require HTTPS')
     if any(character in tiles for character in '\r\n\\'): raise SystemExit('Invalid map tile template')
-    (output/'server.properties').write_text(f'server.origin={origin}\nserver.host={parsed.hostname}\nmaps.tiles={tiles}\n')
+    (output/'server.properties').write_text(f'server.origin={origin}\nserver.host={parsed.hostname}\nmaps.tiles={tiles}\nvalidation={str(args.validation).lower()}\n')
     print('Prepared ignored Android text resources. No Gradle, build or packaging ran.')
 
 

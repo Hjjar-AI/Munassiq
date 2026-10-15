@@ -65,6 +65,7 @@ import java.time.format.DateTimeFormatter
                 })}){Text(label(key))}}
             }
         }}){padding->Column(Modifier.padding(padding).fillMaxSize()){
+            if(BuildConfig.IS_VALIDATION)Text(label("validation_build"),color=MaterialTheme.colorScheme.error,modifier=Modifier.padding(12.dp))
             state.error?.let{message->Text(if(message in listOf("session_expired","request_failed","connection_failed"))label(message) else message,color=MaterialTheme.colorScheme.error,modifier=Modifier.padding(12.dp))}
             state.message?.let{Text(label(it),modifier=Modifier.padding(12.dp))}
             if(state.offline)Row{Text(label("offline"),Modifier.weight(1f));TextButton(onClick={model.refresh()}){Text(label("retry"))}}

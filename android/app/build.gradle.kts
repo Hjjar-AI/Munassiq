@@ -25,6 +25,7 @@ android {
         manifestPlaceholders["serverHost"] = deployment.getProperty("server.host")
         buildConfigField("String", "SERVER_ORIGIN", quoted(deployment.getProperty("server.origin")))
         buildConfigField("String", "MAP_TILES", quoted(deployment.getProperty("maps.tiles", "")))
+        buildConfigField("boolean", "IS_VALIDATION", deployment.getProperty("validation", "false"))
     }
     sourceSets["main"].res.srcDir("src/deployment/res")
     buildFeatures { compose = true; buildConfig = true }

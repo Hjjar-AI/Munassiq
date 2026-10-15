@@ -233,4 +233,5 @@
   <string name="wrong_info">معلومات خاطئة أو مزيفة</string>
   <string name="your_local_time">في توقيت جهازك</string>
   <string name="onboarding_intro">تصفح الفعاليات ونقاط الخدمة، ثم سجّل الدخول للتسجيل والمتابعة وضبط التذكيرات.</string>
+  <string name="validation_build">نسخة تحقق فقط — لم يتم إعداد اتصال بالخادم.</string>
 </resources>

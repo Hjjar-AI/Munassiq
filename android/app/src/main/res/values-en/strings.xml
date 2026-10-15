@@ -233,4 +233,5 @@
   <string name="wrong_info">Wrong/fake information</string>
   <string name="your_local_time">In your device time zone</string>
   <string name="onboarding_intro">Browse events and service points, then sign in to register, follow and set reminders.</string>
+  <string name="validation_build">Validation build only — server connection is not configured.</string>
 </resources>

@@ -3,8 +3,57 @@
 The native app source is in `android/`, tracked by the root Git repository. It is
 not another submodule. **No Gradle, dependency resolution, Kotlin compilation,
 APK packaging, emulator or device run has occurred. This is not a verified APK.**
-The first build must be explicitly authorized under the user's AGENTS.md rules;
-fixing compiler/dependency errors and runtime acceptance remains required work.
+The user's latest instruction is to run builds personally: agents should supply
+the command and must not invoke Gradle/builds themselves unless the user explicitly
+changes that instruction. Fixing compiler/dependency errors and runtime acceptance
+remains required work once the user supplies build output.
+
+## Commands for your terminal (current workflow)
+
+Run from the project directory:
+
+```bash
+python3 -B operations/scripts/setup_android_tools.py
+```
+
+Downloads/checks the pinned archives and installs alongside existing versions:
+`/opt/android-shared/Sdk/platforms/android-35`,
+`/opt/android-shared/Sdk/build-tools/35.0.0`, and
+`/opt/android-shared/gradle/gradle-8.13`. Download archives stay in
+`/opt/android-shared/downloads/munassiq`. Existing partial archives were moved there
+and will be resumed when the provider supports it. Existing installations are preserved. It does not run a build,
+change PATH/Java/SDK defaults or accept licenses. The shared SDK already has an
+accepted license record; this command does not change it. You need write access
+to those shared directories. If permission fails, report the error rather than
+running the whole toolchain as root. You may use `--root` for a different explicit
+shared installation directory if desired.
+
+Until your actual IP HTTPS server and public certificate are ready:
+
+```bash
+bash operations/scripts/build_android.sh --validation --console=plain 2>&1 | tee android-build.log
+```
+
+Builds a **validation-only debug APK**, with a visible warning and API networking
+blocked. A reserved, non-connecting address is used only to validate compilation.
+`tee` displays and saves the output so you can share compiler errors. The build
+script selects the exact Gradle and SDK paths only for this process; shell and
+Android Studio defaults remain unchanged. A successful build should place the APK
+in `android/app/build/outputs/apk/debug/app-debug.apk`. This path is an expectation,
+not evidence that an APK already exists. No build has been run by the agent.
+
+When `android/deployment.properties` contains your actual HTTPS IP origin and
+public certificate, use the connecting build instead:
+
+```bash
+bash operations/scripts/build_android.sh --console=plain 2>&1 | tee android-build.log
+```
+
+No domain is required. The server certificate must include the static IP as an IP
+Subject Alternative Name. These scripts do not set up the server's HTTPS for you.
+JDK 21 is currently installed and selected on this machine; the source targets
+Java 17 bytecode. No Java installation/default was changed. Installation/build
+commands above have not been executed; syntax/source checks alone have passed.
 
 ## Decisions and source layout
 
@@ -101,15 +150,15 @@ The small backend additions have real API tests: public/admin APK version metada
 data-only FCM payloads with title/body/expiry, and event/service deep-link kind.
 The full backend run passed 155 tests; that does not validate any Android code.
 
-## First build — requires explicit permission
+## First build — user runs it
 
-Do not run Android Studio automatic Gradle sync or a build until permission is
-given. No wrapper JAR was generated/downloaded; no installed Gradle/SDK/JDK setup
-has been verified. After authorization, install/verify the documented toolchain,
-prepare real server configuration and use the installed Gradle 8.13 from `android/`:
+The agent has not run Android Studio sync, Gradle or a build. No wrapper JAR was
+generated/downloaded. The side-by-side setup/build scripts above are the current
+workflow. The equivalent explicit Gradle invocation uses the versioned executable
+with the shared SDK selected just for that command:
 
 ```text
-gradle :app:assembleDebug
+ANDROID_HOME=/opt/android-shared/Sdk ANDROID_SDK_ROOT=/opt/android-shared/Sdk /opt/android-shared/gradle/gradle-8.13/bin/gradle --project-dir android :app:assembleDebug
 ```
 
 This resolves libraries, runs KSP/Room generation, compiles Kotlin/resources and

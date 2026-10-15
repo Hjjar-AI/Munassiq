@@ -17,6 +17,7 @@ class ApiClient(private val vault: SessionVault) {
     private val refreshLock = Mutex()
     private val cookies = java.net.CookieManager(null, java.net.CookiePolicy.ACCEPT_ORIGINAL_SERVER)
     private fun connection(path: String, method: String, token: String?): HttpsURLConnection {
+        check(!BuildConfig.IS_VALIDATION) { "Validation build has no configured server" }
         require(!path.startsWith('/') && !path.contains("://") && !path.contains(".."))
         val connection = URL(BuildConfig.SERVER_ORIGIN + "/api/v1/" + path).openConnection() as HttpsURLConnection
         connection.requestMethod = method

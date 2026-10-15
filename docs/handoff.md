@@ -10,7 +10,11 @@ Milestones 1–4 have backend implementations; milestone 5 now has a server-rend
 dashboard and public fallback pages. This is not a finished Android app or production
 deployment. Android milestone 6 now has uncompiled native source in `android/`;
 continue its first-build and device acceptance checklist in `android.md`. Explicit
-permission is still required before Gradle/builds. Dashboard behavior/limits are in `dashboard.md`. Notification
+permission is still required before Gradle/builds. Latest user preference: **the
+user runs builds personally**; provide the command, do not invoke it. Tool downloads/
+installs belong beside existing versions under /opt/android-shared without changing
+defaults. Use setup_android_tools.py and build_android.sh described in android.md.
+Dashboard behavior/limits are in `dashboard.md`. Notification
 backend setup/policies are in `notifications.md`; real FCM/phone integration is
 unverified. The initial handoff was documentation-only; subsequent milestone 4
 added source, requested migrations and tests, without builds or deployment.

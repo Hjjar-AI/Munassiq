@@ -137,3 +137,21 @@
   gaps, including staff tools staying browser-based, verified App Links/signing,
   native validation/gallery/a11y/map/picker/UI work and real FCM/TLS verification.
   Do not mark Android complete or equate backend tests with Android verification.
+
+## 2026-10-15 — user-run build workflow and side-by-side tools
+- Read installed tools: Java 21, shared SDK at /opt/android-shared/Sdk, existing
+  Gradle 8.7 under the user's wrapper cache; the pinned Gradle 8.13/SDK 35 were absent.
+- Began temporary official archive downloads after "continue" to the build question;
+  the interrupted job stopped with partial archives only. No Gradle/build ran,
+  no tools were installed and no defaults were changed.
+- User clarified: tools belong beside existing Android versions, defaults stay
+  unchanged, and the user will run builds personally. Recorded this as current
+  policy; do not treat earlier build authorization as permission to run it now.
+- Added checksum-verified/resumable side-by-side setup script and an explicit-path
+  build script. They are supplied for the user's terminal and were not executed.
+- Moved the stopped job's partial archives and official checksum/metadata into
+  /opt/android-shared/downloads/munassiq, without overwriting existing files.
+  The user-run installer will resume/verify them; no versions were installed.
+- Added a labelled validation configuration that blocks API calls until real IP
+  HTTPS settings are supplied. A domain is not required; actual IP/certificate
+  remain unspecified. Validation source/resources were checked without a build.

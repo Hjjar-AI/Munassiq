@@ -36,6 +36,12 @@ work in the plan and completed work/limits in the log. Source completion does no
 mean runtime verification. Do not invent time/token usage figures; if a visible
 five-hour allowance reaches 20% remaining, finish the current step and stop.
 
+Latest build workflow preference (2026-10-15): provide setup/build commands for
+the user to run in their terminal; do not invoke Gradle/builds on their behalf.
+Install downloaded Android tools side by side under the existing shared Android
+installation path, preserve other versions and do not change defaults/PATH.
+Use explicit versioned executables and command-scoped SDK settings.
+
 ## Product and stack
 
 Free international app for mental-health professionals, mainly psychiatrists,
