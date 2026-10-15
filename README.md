@@ -15,7 +15,9 @@ The notification backend adds FCM queue/retries, follows, preferences,
 announcements/banners, public app settings and admin statistics. Real Firebase
 and phone delivery remain unverified. A server-rendered Arabic/English dashboard
 now exposes account, organizer, moderation and admin workflows. Android, weekly
-backup/restore and production HTTPS deployment remain future milestones.
+backup/restore and production HTTPS deployment remain unfinished. Native Android
+source is now in `android/`, but has not been compiled or run; no APK exists.
+See [Android setup and first-build handoff](docs/android.md).
 
 ## Local setup (Linux, Python 3.10+)
 

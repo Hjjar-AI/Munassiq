@@ -10,7 +10,9 @@ The consolidated target requirements are in [the updated prompt](../original.pro
 - Verify dashboard in a real browser: responsive RTL/LTR, maps/city lookup,
   uploads/share/downloads, accessibility and complete Arabic validation copy.
   Server-rendered role tools, account UI and public fallback pages are implemented.
-- Build milestone 6: native Android, maps/clustering, Room cache, calendar/share, APK updates.
+- Finish milestone 6: Android source now exists; obtain explicit Gradle/build
+  permission, verify toolchain/dependencies, fix build errors and run device/native
+  tests. Complete the acceptance/gap checklist in docs/android.md; no APK exists.
 - Add Nginx/self-signed HTTPS configuration and verify real SMTP/FCM before launch.
 - Add weekly backup/restore scripts, credential exclusions and deletion replay.
 - Resolve remaining external-registration semantics and organizer reapplication

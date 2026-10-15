@@ -106,11 +106,12 @@ accounts, exclude soft-deleted items and count series items rather than occurren
 - Bounded sends serialize with bans. Messages already accepted/in transit cannot
   be recalled. Provider acceptance does not prove timely arrival or user reading.
 
-Quiet hours select `munassiq_silent`, otherwise `munassiq_default`. Android must
-create those channels, handle foreground/delayed arrival using quiet-hour metadata,
-request permission at first registration/reminder, and deduplicate IDs. Server
-payloads alone cannot verify silence on an unbuilt app. Real FCM/phone testing,
-permissions, connectivity and foreground/background behavior remain pending.
-Background auto-display currently uses the channel selected at send time. A
-delivery delayed across a quiet-hours boundary needs special Android handling
-(potentially data-only messages); resolve and verify this in the Android milestone.
+Server messages are now **data-only**: title/body/expiry accompany routing IDs and
+quiet-hour metadata. Android source selects `munassiq_silent` or `munassiq_default`
+at receipt, including delayed/background delivery, and deduplicates `notice_id`.
+This avoids FCM auto-display using a stale send-time channel. Real FCM/phone
+delivery, OS permission, connectivity, high-priority handling and channel behavior
+remain unverified until Android is built and tested. Provider/OS background limits
+can still delay/drop data messages; there is no guaranteed reminder delivery.
+Admin public settings now include `apk_version_code` (default zero/no update),
+paired with the APK URL; set it to the actual released Android version code.

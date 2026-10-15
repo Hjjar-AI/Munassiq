@@ -1,0 +1,7 @@
+# Copy to deployment.properties and configure before any future Gradle sync.
+# Origin only, HTTPS required; no trailing path. Example format: https://<your-IP>
+server.origin=
+# Public PEM certificate or issuing CA, never a private key. Empty for public CA.
+server.certificate=
+# HTTPS template for OpenStreetMap tiles; the provider's attribution is mandatory.
+maps.tiles=https://tile.openstreetmap.org/{z}/{x}/{y}.png

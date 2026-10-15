@@ -211,9 +211,11 @@ other occurrence messages expire at start or after 24 hours, whichever is first.
 Native Kotlin/Compose/MVVM/Room; full RTL, Arabic/English resources, Arabic-friendly
 font, phone language with Arabic fallback, phone digits, accessibility. Light/dark,
 one extensible default color theme, placeholder icon. Minimum Android version
-still requires a documented decision (Android 7+ simplifies certificate trust;
-do not describe this as already approved). Direct APK distribution, in-app update
-check and install instructions. Android app has not been implemented or built.
+chosen under the original delegated decision is Android 7.0/API 24, using Network
+Security Config without a separate Android 6 certificate checker. Direct APK
+distribution, in-app update check and install instructions. Android source now
+exists in android/; it has not been compiled, packaged or device-tested. Milestone
+6 remains in progress; see docs/android.md for source coverage and remaining work.
 
 ## Hosting/operations
 

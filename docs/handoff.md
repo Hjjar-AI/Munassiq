@@ -8,8 +8,9 @@ snapshot, not an automatic guarantee about subsequent edits.
 
 Milestones 1–4 have backend implementations; milestone 5 now has a server-rendered
 dashboard and public fallback pages. This is not a finished Android app or production
-deployment. Next implementation milestone: Android, alongside remaining deployment
-and browser verification. Dashboard behavior/limits are in `dashboard.md`. Notification
+deployment. Android milestone 6 now has uncompiled native source in `android/`;
+continue its first-build and device acceptance checklist in `android.md`. Explicit
+permission is still required before Gradle/builds. Dashboard behavior/limits are in `dashboard.md`. Notification
 backend setup/policies are in `notifications.md`; real FCM/phone integration is
 unverified. The initial handoff was documentation-only; subsequent milestone 4
 added source, requested migrations and tests, without builds or deployment.
@@ -33,10 +34,10 @@ they exist on a remote.
 | Files | Validated/resized images, private draft access, PDFs, profile photos | Real phone/external PDF viewer unverified; no malware scanner |
 | Directory | Search/hours/filters/venue APIs; dashboard map, clusters, quick actions | Interactive maps/share need real browser verification |
 | Locations | Syria seed: 10,816 GeoNames places, stable IDs, searchable picker API, admin corrections | 756 English fallback names; source completeness/quality needs review |
-| Organizer tools | Profile/events, own items, stats/roster/CSV/PDF API and dashboard screens | PDF needs configured Arabic font; Android screens missing |
+| Organizer tools | API/dashboard plus uncompiled native forms/roster/export source | PDF needs configured Arabic font; Android compilation/QA pending |
 | Reports/feedback | API and dashboard submission/handling, warning intent | Actual push remains unverified |
 | Calendar/views/reminders | ICS download, approximate daily view counts, reminder offsets/delivery worker | No phone calendar integration; real delivery unverified |
-| Notifications | Devices, preferences, quiet-hour metadata, essential/optional types, follows/digests, announcements/banners, retries, bans, settings/stats APIs | Disabled until Firebase configured; Android channels/receipt behavior missing |
+| Notifications | Server data-only messages plus native device-sync/quiet-channel source | Disabled until Firebase configured; Android receipt behavior unverified |
 | Operations | .env.example, run scripts, systemd service/timer examples, job run logging | No Nginx/certificate/backup/restore implementation or active services |
 
 Source map:
@@ -65,6 +66,10 @@ Source map:
 - `backend/dashboard/`: cookie/session middleware, fixed local API bridge,
   serializer-derived HTML forms, role-specific views/templates, CSS/JavaScript,
   manual map selection and marker clustering. No model or migration was added.
+- `android/`: Kotlin/Compose/MVVM/Room source tracked in the root repository,
+  not a new submodule. `operations/scripts/prepare_android.py` prepares ignored
+  HTTPS/public-certificate text configuration; check_android_source.py checks
+  resources only. No Gradle/toolchain/dependency/native execution has occurred.
 - `operations/scripts/`: runtime preparation, management/dev/server helpers,
   offline GeoNames converter. `operations/systemd/`: examples only.
 - `docs/accounts.md`, `catalog.md`, `locations.md`: detailed existing API behavior.
@@ -108,9 +113,12 @@ Source map:
   asynchronous uploads, downloads/share/clipboard and accessibility.
 - [ ] Android deep-link handoff is still pending the Android app implementation.
 
-### Milestone 6: Android — entire app remains
+### Milestone 6: Android source exists; compilation and acceptance remain
 
-- [ ] Choose/document minimum Android version, project structure and dependencies.
+- [x] Choose/document minimum Android version (7.0/API 24), structure and candidate dependencies.
+- The following unchecked items mean **verify and finish**, not that no source
+  exists. Native screen/client/cache/notification/map source is described in android.md;
+  no Kotlin compilation, native test, emulator run or APK exists yet.
 - [ ] Compose/MVVM navigation, API/session client and safe token storage, Room
   cache, own-data cleanup on logout/deletion, refresh/offline/retry behavior.
 - [ ] Arabic/English strings, RTL, Arabic font, phone digits, accessibility,
@@ -172,17 +180,21 @@ Open or implementation-specific choices requiring review before dependent work:
   per UTC day (configurable). Missed reminder expiry one hour after due, never
   after start; other occurrence pushes expire at start or after 24 hours.
   Quiet hours deliver silently rather than defer; client channel behavior awaits Android.
-- Android minimum version remains undecided. Android 7+ is a candidate, not a
-  confirmed decision. No Android certificate implementation currently exists.
+- Android minimum is now 7.0/API 24 under the user's original "you decide"
+  delegation. Public-certificate preparation and scoped Network Security Config
+  source exist, with actual Android TLS still unverified. Do not ask the same
+  minimum-version question again unless new compatibility evidence requires it.
 - Recurrence limit 52, skipping invalid monthly dates and rejecting DST ambiguity
   are current implementation policies; document or discuss before changing them.
 
 ## Verification and environment — do not overstate
 
-Milestone-5 full run: 153 tests passed (including 21 dashboard tests, prior
-notification coverage and registration races). Configuration/OpenAPI validation
-passed. No dashboard migration/model was introduced. Lightweight syntax checks
-and historical milestone-4 migration drift checks are recorded in work-log.md.
+Latest full backend run: 155 tests passed, including Android update metadata,
+data-only push routing, dashboard coverage and registration races. Configuration/
+OpenAPI validation passed. The new APK-version migration was exercised only in
+temporary test databases. Android XML/resource/manifest text checks passed, as
+did disposable public-certificate preparation checks. These do not validate Kotlin,
+Gradle, Room processing, actual trust, UI or device behavior.
 This is historical evidence, not a guarantee about later source changes.
 
 Supplied migrations were exercised in temporary databases only. Full Syria seed
@@ -235,7 +247,8 @@ and verify a complete copy first. This handoff does not change the Git layout.
 > Continue Munassiq from this existing workspace. Read original.propmpt.md and
 > docs/handoff.md, docs/plan.md and docs/work-log.md first, then verify current
 > source and both Git statuses. Backend milestones 1–4 and dashboard milestone 5
-> exist; next is Android. Real browser/Firebase/production integration is still
+> exist; continue the uncompiled Android source using docs/android.md. Gradle/
+> builds still need explicit permission. Real browser/Firebase/production integration is still
 > pending. Preserve confirmed decisions and local
 > backend commits. Do not restart, flatten Git, deploy, or run builds. Ask about
 > unresolved dependent policies, and follow my current AGENTS.md restrictions.

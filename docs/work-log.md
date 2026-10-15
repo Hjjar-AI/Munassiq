@@ -113,3 +113,27 @@
   preview/browser tool was available. Layout/RTL/mobile/a11y/maps/share/async file
   UX and complete Arabic server-error copy remain acceptance work. Production
   deployment, real SMTP/FCM, Android and backup/restore remain pending.
+
+## 2026-10-15 — Android source / first-build checkpoint (milestone 6 in progress)
+- Added a root-tracked native Kotlin/Compose/MVVM/Room project (no new submodule),
+  API-24 minimum, candidate pinned toolchain, Arabic/English resources, RTL/theme/
+  calendar settings, onboarding and placeholder vector icon. No app APK exists.
+- Added HTTPS/bearer refresh client, Android-Keystore session encryption, bounded
+  account-scoped recent cache, logout cleanup, native browsing/filter/details,
+  registration/reminders, organizer forms/uploads/roster/export and account settings.
+- Added Compose manual OSM picker/marker grouping, calendar/share/file-provider
+  actions, FCM device sync/receipt source, contextual notification permission,
+  local quiet-hour checks, deduplication/expiry and update metadata handling.
+- Added text-only deployment preparation for a configured HTTPS host/public PEM,
+  scoped Network Security Config and source/resource checking instructions.
+- Extended server app settings with APK version code and migration; changed FCM
+  payloads to data-only title/body/expiry plus item-kind routing for receipt-time
+  quiet handling. Full backend run passed 155 tests; config/OpenAPI checks passed.
+- Android XML, matching 233 Arabic/English resource keys, literal references,
+  no-location-permission/disabled-backup checks and disposable public-CA/self-signed
+  text preparation checks passed. No Gradle, dependency resolution, compilation,
+  native tests, device/emulator, TLS handshake, APK packaging or deployment ran.
+- docs/android.md records exact source coverage, first-build setup and acceptance
+  gaps, including staff tools staying browser-based, verified App Links/signing,
+  native validation/gallery/a11y/map/picker/UI work and real FCM/TLS verification.
+  Do not mark Android complete or equate backend tests with Android verification.
