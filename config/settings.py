@@ -36,11 +36,11 @@ DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3",
     "NAME": RUNTIME_ROOT / "database.sqlite3",
     "TEST": {"NAME": str(RUNTIME_ROOT / "test.sqlite3")}, "OPTIONS": {"timeout": 20, "transaction_mode": "IMMEDIATE"}}}
 INSTALLED_APPS = ["django.contrib.auth", "django.contrib.contenttypes", "django.contrib.staticfiles",
-    "rest_framework", "drf_spectacular", "core", "accounts", "catalog", "notifications"]
+    "rest_framework", "drf_spectacular", "core", "accounts", "catalog", "notifications", "dashboard"]
 AUTH_USER_MODEL = "accounts.User"
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.Argon2PasswordHasher"]
 MIDDLEWARE = ["core.middleware.ClientAddressMiddleware", "django.middleware.security.SecurityMiddleware",
-    "django.middleware.locale.LocaleMiddleware", "django.middleware.common.CommonMiddleware",
+    "django.middleware.locale.LocaleMiddleware", "dashboard.middleware.DashboardMiddleware", "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware", "django.middleware.clickjacking.XFrameOptionsMiddleware"]
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
@@ -120,6 +120,7 @@ ANNOUNCEMENTS_PER_ADMIN_PER_DAY = positive_integer('ANNOUNCEMENTS_PER_ADMIN_PER_
 FCM_SERVICE_ACCOUNT_FILE = os.environ.get('FCM_SERVICE_ACCOUNT_FILE', '')
 FCM_PROJECT_ID = os.environ.get('FCM_PROJECT_ID', '')
 FCM_ENABLED = boolean('FCM_ENABLED')
+MAP_TILE_URL = os.environ.get('MAP_TILE_URL', '')
 if FCM_PROJECT_ID and not all(c.isascii() and (c.isalnum() or c in '-:') for c in FCM_PROJECT_ID):
     raise ImproperlyConfigured('Invalid FCM_PROJECT_ID')
 if FCM_ENABLED and (not FCM_PROJECT_ID or not FCM_SERVICE_ACCOUNT_FILE):

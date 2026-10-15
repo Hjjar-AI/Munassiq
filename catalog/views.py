@@ -428,9 +428,12 @@ class UploadView(InputView):
 
     @extend_schema(responses={201: AssetSerializer})
     def post(self, request):
-        svc.require_creator(request.user)
+        if not svc.is_reviewer(request.user):
+            svc.require_creator(request.user)
         limited(request, 'directory-upload', 15)
         asset = store(request.user, self.input(request)['file'], self.kind)
+        if svc.is_reviewer(request.user):
+            audit(request.user, 'item.attachment_upload', asset)
         return Response({'id': asset.pk, 'kind': asset.kind, 'size': asset.size}, status=201)
 
 

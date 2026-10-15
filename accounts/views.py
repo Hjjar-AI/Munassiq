@@ -2,6 +2,7 @@ from datetime import timedelta
 from django.db import transaction
 from django.core.exceptions import RequestDataTooBig
 from django.shortcuts import get_object_or_404, render
+from django.http import Http404
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema
 from rest_framework.exceptions import Throttled, ValidationError
@@ -233,7 +234,9 @@ class PolicyView(PublicInputView):
 
     @extend_schema(responses=CurrentPolicySerializer)
     def get(self, request):
-        policy = get_object_or_404(Policy.objects.order_by('-pk'))
+        policy = Policy.objects.order_by('-pk').first()
+        if policy is None:
+            raise Http404('No policy has been published.')
         return Response({'id': policy.pk, 'created_at': policy.created_at, **PolicySerializer(policy).data})
 
 
