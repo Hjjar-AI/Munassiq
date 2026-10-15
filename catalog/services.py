@@ -194,6 +194,7 @@ def edit_item(actor, item_id, payload, moderator=False):
 
 
 def apply_revision(item, correct_archive=False):
+    first_publication = item.published_revision_id is None
     detail = item.proposed_revision.payload
     item.published_revision = item.proposed_revision
     item.proposed_revision = None
@@ -233,6 +234,9 @@ def apply_revision(item, correct_archive=False):
                 occurrence.cancellation_cutoff_minutes = detail['cancellation_cutoff_minutes']
                 occurrence.save()
                 promote(occurrence)
+    if first_publication and item.kind == 'event':
+        from notifications.services import published_event
+        published_event(item)
 
 
 @transaction.atomic

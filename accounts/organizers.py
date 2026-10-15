@@ -142,6 +142,9 @@ class DecideView(InputView):
             record.credential_name = ''
             record.save()
             audit(request.user, 'organizer_request.' + record.status, record)
+            from catalog.models import Notice
+            Notice.objects.create(user=record.user, kind='organizer_request.'+record.status,
+                metadata={'request_id': record.pk})
             EmailMessage.objects.create(user=record.user, recipient=record.user.email,
                 subject='قرار طلب المنظّم / Organizer application decision',
                 body=f'حالة الطلب / Application status: {record.status}\n{record.decision_reason}',

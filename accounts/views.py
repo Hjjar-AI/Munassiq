@@ -214,6 +214,14 @@ class ExportView(InputView):
         data['reminders'] = list(Reminder.objects.filter(user=request.user).values('occurrence_id', 'offset_minutes'))
         data['organizer_profile'] = list(OrganizerProfile.objects.filter(user=request.user).values('bio', 'photo_id'))
         data['feedback'] = list(Feedback.objects.filter(user=request.user).values('text', 'created_at'))
+        from notifications.models import CategoryFollow, Device, OrganizerFollow, Preferences
+        from notifications.serializers import PreferencesSerializer
+        pref = Preferences.objects.filter(user=request.user).first()
+        data['notification_preferences'] = PreferencesSerializer(pref).data if pref else None
+        data['devices'] = list(Device.objects.filter(user=request.user).values('id', 'installation_id', 'created_at', 'updated_at'))
+        data['follows'] = {
+            'organizer_ids': list(OrganizerFollow.objects.filter(user=request.user).values_list('organizer_id', flat=True)),
+            'category_ids': list(CategoryFollow.objects.filter(user=request.user).values_list('category_id', flat=True))}
         response = Response(data)
         response['Content-Disposition'] = 'attachment; filename="munassiq-account.json"'
         response['Cache-Control'] = 'no-store'

@@ -213,4 +213,6 @@ def set_ban(actor, user, banned, reason):
     if banned:
         Session.objects.filter(user=user, revoked_at=None).update(revoked_at=timezone.now())
         EmailMessage.objects.filter(user=user, sent_at=None).delete()
+        from notifications.services import suppress_user
+        suppress_user(user)
     audit(actor, 'user.ban' if banned else 'user.unban', user)

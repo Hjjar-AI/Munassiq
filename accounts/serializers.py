@@ -153,4 +153,6 @@ class ExportSerializer(UserSerializer):
     reminders = serializers.ListField(child=serializers.DictField())
     organizer_profile = serializers.ListField(child=serializers.DictField())
     uploads = serializers.ListField(child=serializers.DictField())
-
+    notification_preferences = serializers.DictField(allow_null=True)
+    devices = serializers.ListField(child=serializers.DictField())
+    follows = serializers.DictField()

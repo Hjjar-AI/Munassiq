@@ -315,7 +315,7 @@ class ViewResultSerializer(serializers.Serializer):
 
 
 class ReminderSerializer(serializers.Serializer):
-    offset_minutes = serializers.IntegerField(min_value=0, max_value=525600)
+    offset_minutes = serializers.IntegerField(min_value=1, max_value=525600)
 
 
 class OrganizerProfileInputSerializer(serializers.Serializer):

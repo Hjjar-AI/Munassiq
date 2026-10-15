@@ -36,7 +36,7 @@ DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3",
     "NAME": RUNTIME_ROOT / "database.sqlite3",
     "TEST": {"NAME": str(RUNTIME_ROOT / "test.sqlite3")}, "OPTIONS": {"timeout": 20, "transaction_mode": "IMMEDIATE"}}}
 INSTALLED_APPS = ["django.contrib.auth", "django.contrib.contenttypes", "django.contrib.staticfiles",
-    "rest_framework", "drf_spectacular", "core", "accounts", "catalog"]
+    "rest_framework", "drf_spectacular", "core", "accounts", "catalog", "notifications"]
 AUTH_USER_MODEL = "accounts.User"
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.Argon2PasswordHasher"]
 MIDDLEWARE = ["core.middleware.ClientAddressMiddleware", "django.middleware.security.SecurityMiddleware",
@@ -115,3 +115,12 @@ FILE_UPLOAD_HANDLERS = ["accounts.uploads.SizeLimitHandler",
     "django.core.files.uploadhandler.TemporaryFileUploadHandler"]
 
 EXPORT_FONT_PATH = os.environ.get("EXPORT_FONT_PATH", "")
+
+ANNOUNCEMENTS_PER_ADMIN_PER_DAY = positive_integer('ANNOUNCEMENTS_PER_ADMIN_PER_DAY', 3)
+FCM_SERVICE_ACCOUNT_FILE = os.environ.get('FCM_SERVICE_ACCOUNT_FILE', '')
+FCM_PROJECT_ID = os.environ.get('FCM_PROJECT_ID', '')
+FCM_ENABLED = boolean('FCM_ENABLED')
+if FCM_PROJECT_ID and not all(c.isascii() and (c.isalnum() or c in '-:') for c in FCM_PROJECT_ID):
+    raise ImproperlyConfigured('Invalid FCM_PROJECT_ID')
+if FCM_ENABLED and (not FCM_PROJECT_ID or not FCM_SERVICE_ACCOUNT_FILE):
+    raise ImproperlyConfigured('FCM requires a project ID and a private service-account file')

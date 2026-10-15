@@ -661,7 +661,7 @@ class ReminderView(InputView):
             raise ValidationError('Choose a reminder time that has not already passed.')
         Reminder.objects.update_or_create(user=request.user, occurrence=row,
             defaults={**data, 'sent_for_start': None})
-        return Response({'detail': 'Reminder saved. Notifications are not enabled yet.'})
+        return Response({'detail': 'Reminder saved. / تم حفظ التذكير.'})
 
     @extend_schema(request=None, responses={204: None})
     def delete(self, request, occurrence_id):
