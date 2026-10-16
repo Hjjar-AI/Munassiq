@@ -19,9 +19,16 @@ The consolidated target requirements are in [the updated prompt](../original.pro
   the user's rebuild and phone acceptance. The HTML-inspired native design refresh
   also needs light/dark, RTL/LTR, large-font and navigation acceptance (android-design.md).
   Real server connections remain unverified.
-- Add Nginx/self-signed HTTPS configuration and verify real SMTP/FCM before launch.
-- Add weekly backup/restore scripts, credential exclusions and deletion replay.
-- Pin deployment dependencies for the selected Python/platform; requirements remain ranges.
+- Generate final Nginx/IP-SAN HTTPS configuration after the user supplies the static
+  IP (service account mhmmd). Tooling/guides exist; Nginx parsing, public deployment,
+  real SMTP/FCM and Android TLS still need verification.
+- Install reviewed backup cron only after deployment approval; verify first live
+  backup/restore acceptance and protect current privacy journal. Six isolated
+  integration tests/disposable restore drill passed; no live data was touched.
+- Verify a clean install from the existing-version Linux/Python 3.14 lock snapshot;
+  pip consistency passed, but other platforms need their own reviewed snapshot.
+- Verify signed release/APK publishing and future domain App Links with the user's
+  chosen key/server. Tooling exists; no key generation/release build/publishing ran.
 - Review GeoNames location quality/Arabic fallbacks; preserve attribution in client pickers.
 - Obtain explicit permission before builds, compilation, Gradle or packaging.
 - Install additional Android tools side by side under /opt/android-shared, preserve

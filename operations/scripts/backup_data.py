@@ -7,10 +7,11 @@ import os
 from pathlib import Path
 import shutil
 import sqlite3
+import subprocess
 import tarfile
 import tempfile
 import uuid
-from operations_common import configured, digest, exclusive, logger
+from operations_common import ROOT, configured, digest, exclusive, logger
 from core.recovery import snapshot
 
 
@@ -63,7 +64,8 @@ def main():
             _, marker = snapshot(privacy)
             files = {'database.sqlite3': digest(database)}
             files.update({'media/'+name: digest(staging/'media'/name) for name in names})
-            manifest = {'format': 1, 'created_at': datetime.now(timezone.utc).isoformat(),
+            revision = subprocess.run(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], capture_output=True, text=True)
+            manifest = {'format': 1, 'source_revision': revision.stdout.strip() if revision.returncode == 0 else 'unknown', 'created_at': datetime.now(timezone.utc).isoformat(),
                 'journal': marker, 'files': files}
             (staging/'manifest.json').write_text(json.dumps(manifest, indent=2))
             stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')

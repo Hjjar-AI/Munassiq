@@ -115,8 +115,8 @@ server {{
         f'server.origin=https://{host}\nserver.certificate={pem}\nmaps.tiles=\n')
     for template in (ROOT/'operations/systemd').glob('*.example'):
         text = template.read_text().replace('User=munassiq', 'User='+args.user)
-        text = text.replace('WorkingDirectory=/absolute/path/munassiq', 'WorkingDirectory='+quoted(ROOT))
-        text = text.replace('EnvironmentFile=/absolute/path/munassiq/.env', 'EnvironmentFile='+quoted(ROOT/'.env'))
+        text = text.replace('WorkingDirectory=/absolute/path/munassiq', 'WorkingDirectory='+str(ROOT).replace('%', '%%'))
+        text = text.replace('EnvironmentFile=/absolute/path/munassiq/.env', 'EnvironmentFile='+str(ROOT/'.env').replace('%', '%%'))
         text = re.sub(r'ExecStart=/bin/bash /absolute/path/munassiq/(operations/scripts/[^\s]+)([^\n]*)',
             lambda match: 'ExecStart=/bin/bash '+quoted(ROOT/match.group(1))+match.group(2), text)
         text = text.replace('ReadWritePaths=/absolute/path/munassiq/runtime', 'ReadWritePaths='+quoted(runtime)+' '+quoted(privacy))

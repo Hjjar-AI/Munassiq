@@ -20,8 +20,7 @@ unverified. The initial handoff was documentation-only; subsequent milestone 4
 added source, requested migrations and tests, without builds or deployment.
 
 Historical milestone-3 revisions: root `1e0fd94`, backend `9212104`. Inspect current
-Git logs/status for newer milestone-4 commits. Commits are local; do not assume
-they exist on a remote.
+Git logs/status for newer milestone-4 commits. Inspect git status/upstream before assuming newer commits are published.
 
 ## Existing source and behavior
 
@@ -29,8 +28,8 @@ they exist on a remote.
 | --- | --- | --- |
 | Backend core | Django/DRF, environment config, health/schema/docs, daily logs, Gunicorn/dev helpers | No real internet deployment checked; Swagger uses CDN assets |
 | Accounts | Email/password, Argon2, signup consent, verification/reset/email change, revocable rotating sessions, logout-all, bans/roles, first admin command | Real SMTP/inbox delivery unverified |
-| Policies | Versioned bilingual placeholders, API admin editing | Needs owner review and dashboard editor |
-| Organizer applications | Private 5 MB credentials, one open request, locks/decision, credential deletion | Backup exclusion strategy not implemented as a backup script |
+| Policies | Versioned bilingual placeholders, API/dashboard admin editing | Needs owner review |
+| Organizer applications | Private 5 MB credentials, one open request, locks/decision, credential deletion | Credential exclusion verified in disposable backup/restore tests |
 | Audit | Server-side staff records, admin read API and dashboard viewer | Metadata labels need final localization review |
 | Content | Event/service APIs and dashboard forms/review/locks/hide/delete/restore/templates | Real browser presentation/interaction not verified |
 | Registration | Four states, capacity transactions, FIFO promotion, overlap warning, cutoff, series signup, required-reason removal, reschedule/reconfirm | Configured worker attempts push; real delivery unverified |
@@ -38,11 +37,11 @@ they exist on a remote.
 | Files | Validated/resized images, private draft access, PDFs, profile photos | Real phone/external PDF viewer unverified; no malware scanner |
 | Directory | Search/hours/filters/venue APIs; dashboard map, clusters, quick actions | Interactive maps/share need real browser verification |
 | Locations | Syria seed: 10,816 GeoNames places, stable IDs, searchable picker API, admin corrections | 756 English fallback names; source completeness/quality needs review |
-| Organizer tools | API/dashboard plus uncompiled native forms/roster/export source | PDF needs configured Arabic font; Android compilation/QA pending |
+| Organizer tools | API/dashboard plus native forms/roster/export source | PDF needs configured Arabic font; latest Android rebuild/QA pending |
 | Reports/feedback | API and dashboard submission/handling, warning intent | Actual push remains unverified |
-| Calendar/views/reminders | ICS download, approximate daily view counts, reminder offsets/delivery worker | No phone calendar integration; real delivery unverified |
+| Calendar/views/reminders | ICS download, approximate daily view counts, reminder offsets/delivery worker | Native calendar integration source exists; actual phone/delivery unverified |
 | Notifications | Server data-only messages plus native device-sync/quiet-channel source | Disabled until Firebase configured; Android receipt behavior unverified |
-| Operations | .env.example, run scripts, systemd service/timer examples, job run logging | No Nginx/certificate/backup/restore implementation or active services |
+| Operations | Backup/restore with deletion journal, config preflight, IP-SAN/Nginx/systemd generator, cron and release helpers | Disposable restore drill passed; live data/Nginx/services/public deployment unverified |
 
 Source map:
 
@@ -146,18 +145,20 @@ Source map:
 
 ### Operations and final acceptance
 
-- [ ] Reproducible deployment dependency lock/pin after selecting target platform;
-  requirements currently use ranges. Do not silently change versions.
-- [ ] Nginx static-IP/self-signed HTTPS configuration, certificate creation/renewal
-  guide, trusted-proxy checks, firewall/host/origin settings and public deployment.
+- [x] Existing-version Linux/Python 3.14 dependency snapshot; no versions changed.
+- [ ] Verify clean installation/platform portability of that snapshot.
+- [x] IP-SAN/Nginx/systemd generator and configuration/renewal/firewall guidance.
+- [ ] Actual IP/certificate, Nginx parsing, internet reachability and activation.
 - [ ] Configure real SMTP, verify bilingual links/expiry and inbox arrival.
 - [ ] Configure real FCM and verify delivery/quiet hours/invalid tokens/retries.
-- [ ] Weekly cron backup to configured local destination, retain four, SQLite
-  consistency plus media/PDF coverage, credential exclusion, private permissions.
-- [ ] Restore/update guide and disposable restore drill; design deletion replay
-  or retention so restoring a backup does not resurrect deleted private data.
-- [ ] Complete beginner README for real deployment, backup/restore, updates, APK
-  distribution and recovery; current README explicitly marks these gaps.
+- [x] Weekly cron example, configured local backup destination, four-archive
+  retention, SQLite snapshot, media/PDF coverage and credential/token exclusions.
+- [x] Offline restore implementation and guide, current deletion-journal requirement
+  with account stewardship and purged-item replay. No new database fields/migrations.
+- [x] Six explicitly authorized integration tests with a disposable restore drill.
+- [ ] First real backup/schedule/operational recovery acceptance.
+- [x] Beginner deployment, backup/restore, update, signing/APK distribution and
+  recovery guides; real operational/device acceptance remains separate.
 - [ ] Review placeholder Terms/Privacy, location accuracy/Arabic labels and credit.
 - [ ] Install/customize systemd units only in an explicitly authorized environment;
   no example has been activated here.
@@ -256,3 +257,19 @@ User must rebuild: source/resource checks do not establish compilation or device
 work account setup was run by the user and its SDK/cache paths confirmed correct;
 project android ACLs allow developer-group sharing. Keep per-user Gradle caches and
 avoid concurrent builds of the same checkout.
+
+## Operations implementation checkpoint (2026-10-16)
+
+New operations scripts: backup_data.py, restore_data.py, prepare_deployment.py,
+check_deployment.py, run_backend.py, publish_apk.py and prepare_app_links.py.
+core/recovery.py syncs PII-free deletion intents before existing account/final-item
+removals, without schema changes. Restore is conservative for rolled-back deletion
+intents; see backup-restore.md. Never erase/truncate the current privacy journal.
+
+Service account confirmed mhmmd; actual IP still not supplied. Generated disposable
+reserved-IP systemd units passed syntax review after fixing paths with spaces.
+Django check, pip consistency, Python/shell syntax and Android resource checks pass.
+Nginx is not installed here. User explicitly approved temporary recovery tests;
+all six passed including a real disposable backup/restore. No live-data recovery,
+certificate/key generation, Gradle/build, release publishing, live credentials or
+service activation occurred. Repeat with operations/scripts/check_recovery.py.

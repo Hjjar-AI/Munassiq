@@ -45,8 +45,9 @@ def main():
             flag = '-checkip'
         except ValueError:
             flag = '-checkhost'
-        result = subprocess.run(['openssl','x509','-in',str(args.certificate),'-noout','-checkend','2592000',flag,parsed.hostname],capture_output=True)
-        if result.returncode:
+        result = subprocess.run(['openssl','x509','-in',str(args.certificate),'-noout',flag,parsed.hostname],capture_output=True)
+        expiry = subprocess.run(['openssl','x509','-in',str(args.certificate),'-noout','-checkend','2592000'],capture_output=True)
+        if result.returncode or b'does match certificate' not in result.stdout or expiry.returncode:
             issues.append('Public certificate does not match the host or expires within 30 days')
     if issues:
         print('\n'.join('- '+issue for issue in issues))

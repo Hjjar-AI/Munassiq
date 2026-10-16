@@ -96,6 +96,8 @@ def main():
         raise SystemExit('Refusing existing/live target. Choose a new, empty path.')
     if not target.parent.is_dir():
         raise SystemExit('Target parent directory must already exist')
+    if target.parent.stat().st_uid != os.getuid() or target.parent.stat().st_mode & 0o002:
+        raise SystemExit('Use a parent folder owned by this account and not world-writable')
     log = logger(current_runtime, 'restore')
     try:
         with tempfile.TemporaryDirectory(prefix='.munassiq-restore-', dir=target.parent) as folder:

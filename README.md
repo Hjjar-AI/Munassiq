@@ -14,10 +14,12 @@ organizer profiles, calendar files and CSV/PDF exports are now implemented too.
 The notification backend adds FCM queue/retries, follows, preferences,
 announcements/banners, public app settings and admin statistics. Real Firebase
 and phone delivery remain unverified. A server-rendered Arabic/English dashboard
-now exposes account, organizer, moderation and admin workflows. Android, weekly
-backup/restore and production HTTPS deployment remain unfinished. Native Android
-source is now in `android/`, but has not been compiled or run; no APK exists.
-See [Android setup and first-build handoff](docs/android.md).
+now exposes account, organizer, moderation and admin workflows. The user built a
+validation Android APK; newer native finishing/design/release changes await rebuild
+and device acceptance. Backup/restore, deletion replay, deployment configuration
+and signed-release tooling now have source implementations, not production proof.
+See [Android](docs/android.md), [deployment](docs/deployment.md),
+[backup/restore](docs/backup-restore.md) and [release](docs/release.md) guides.
 
 ## Local setup (Linux, Python 3.10+)
 
@@ -33,8 +35,11 @@ Creates an isolated Python environment so dependencies do not affect other progr
 .venv/bin/python -m pip install --only-binary=:all: --no-compile -r backend/requirements.txt
 ```
 Downloads backend libraries as ready-made packages, without building packages.
-The version ranges are not a reproducible lockfile yet. If binary packages are
-unavailable for your computer, stop and report that error rather than enabling builds.
+For the existing Linux/Python 3.14 environment, use
+`backend/requirements-linux-py314.lock.txt` instead to reproduce the installed
+versions. This snapshot does not install or change versions by itself. Other
+Python/platforms need their own reviewed snapshot. If binary packages are
+unavailable, stop and report the error rather than enabling builds.
 
 ```bash
 cp .env.example .env
@@ -178,8 +183,11 @@ Notification delivery uses the separate `send_notifications` command after Fireb
 configuration; see [notification setup and policies](docs/notifications.md).
 The content-job timer examples are not activated automatically.
 
-## Production operation is still pending
+## Production operation — tooling ready, activation pending
 
+[Deployment instructions](docs/deployment.md) explain the configuration generator,
+IP-SAN certificate, Nginx, static files, systemd units, cron, SMTP/FCM and updates.
+The service account is mhmmd; the actual static IP is still required.
 `run_server.sh` uses Gunicorn. Configure Nginx and self-signed HTTPS before internet
 use; never expose Gunicorn directly. Set debug off, explicit allowed hosts and
 trusted CSRF origins, `DJANGO_HTTPS_ONLY=true`, and an HTTPS `APP_PUBLIC_URL`.
@@ -190,7 +198,9 @@ are rejected. `ADMIN_IP_RESTRICTION` checks that validated address.
 
 Customize the systemd examples' user, project path, and runtime permissions before
 installation. If `APP_RUNTIME_DIR` changes, update `ReadWritePaths` in the main unit.
-Run scripts use exported `APP_BIND`, or `127.0.0.1:8000`; systemd loads it from `.env`.
+Run scripts select the backend environment, load .env safely through Python, then
+use configured APP_BIND (default loopback). Export APP_VENV_DIR for a personal
+environment, or use the existing project/.venv. No global defaults are changed.
 Daily UTC log rotation retains 30 rotated files. Background units use separate log names.
 
 ## Data, backup, restore and updates
@@ -200,10 +210,15 @@ logs, static assets and a separate `private_credentials` folder. Never expose or
 back up that credential folder. Documents are deleted after organizer decisions
 and account deletion; cleanup retries orphaned files after interrupted deletion.
 
-Weekly backup/restore scripts are not implemented yet. Do not treat these milestone
-files as a production-ready deployment. Before replacing source, stop services
-and preserve `.env` and runtime data. Follow future migration/backup instructions.
-APK install/update instructions will arrive with the Android milestone.
+[Backup/restore tooling](docs/backup-restore.md) now supports online SQLite snapshots,
+referenced images/PDFs, four-archive retention and a weekly user-cron example.
+Restore uses a NEW offline runtime and the CURRENT deletion journal, never an
+in-place overwrite. APP_PRIVACY_DIR must persist across restores; credential
+uploads and active tokens/queues are excluded. Six isolated integration tests and a disposable restore drill passed; the first
+production backup and scheduling still need verification.
+[Release instructions](docs/release.md) cover signing, verification, publication,
+updates and future domain App Links. No services, public release or live integration
+were activated by writing these tools.
 
 ## Work records and Git
 

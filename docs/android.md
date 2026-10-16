@@ -291,3 +291,12 @@ headers, tonal browse/detail cards, collapsible advanced filters and grouped set
 adapt ideas from the user's local Material You/One UI/minimal HTML examples.
 313 bilingual resource keys pass source checks. Rebuild and visual/device acceptance
 remain required; no HTML WebView, dependency/version change or build was introduced.
+
+## Release tooling checkpoint
+
+See release.md for environment-only signing, --release in the user-run build helper,
+verified APK publication and domain assetlinks generation. Validation releases are
+rejected. Version code/name remain unchanged. HTTPS service deep links now route
+natively too; autoVerify remains false for static-IP/self-signed deployments and
+can be enabled only for a domain/public-trust configuration. No release build,
+key generation, signing verification or device App Link verification ran.

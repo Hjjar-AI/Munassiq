@@ -2,7 +2,8 @@
 
 The scripts operate on SQLite only. They do not deploy, overwrite a live database,
 start services, accept uploads or include patient data. Run them as mhmmd, using
-its backend virtual environment. No restore drill has been run yet.
+its backend virtual environment. Six isolated integration tests, including a real disposable backup/restore drill, passed.
+No live data has been backed up or restored by this work.
 
 ## Configure storage
 
@@ -35,7 +36,7 @@ journal. Existing journal identity must match older backups.
 Loads .env, makes a consistent snapshot with SQLite's online backup API, checks
 integrity, scrubs active authentication/FCM tokens and email/push queues, vacuums
 removed values out of the snapshot, copies only referenced images/PDFs and writes
-a checksum manifest. Credential documents, their storage names, .env, Firebase
+a checksum manifest with the source Git revision. Credential documents, their storage names, .env, Firebase
 keys, TLS/signing keys and logs are excluded. Existing original data is not edited.
 
 If a referenced file disappears during concurrent cleanup, backup aborts instead
@@ -110,3 +111,19 @@ protected TLS/Firebase/signing secrets. Recreate Python dependencies from the lo
 file; do not copy a virtual environment. Change URLs/paths, generate new deployment
 files, verify permissions and repeat client checks. Do not transfer organizer
 credential files into a backup; deal with any still-pending requests explicitly.
+
+## Repeat the isolated integration checks
+
+```bash
+.venv/bin/python -B operations/scripts/check_recovery.py
+```
+
+Uses a new private temporary runtime and ephemeral configuration, creates a test
+database from existing application migrations, and removes it afterwards. It never
+opens your live database, sends SMTP/FCM, builds Android or starts services. Six
+checks cover exclusions/VACUUM, four-archive retention, deletion replay/stewardship/
+seat promotion, missing credential reapplication, safe target refusal, journal
+identity and archive traversal/checksum failures, plus fail-closed journal access.
+The first execution passed all six tests with a 7.210-second test body. Actual
+production backups, scheduling, storage recovery and user-facing clients still
+need acceptance in the configured environment.

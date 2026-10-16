@@ -12,9 +12,10 @@ for name in ("", "media", "private_credentials", "logs", "static"):
     directory = runtime / name
     directory.mkdir(parents=True, exist_ok=True, mode=0o700)
     directory.chmod(0o700)
-print("Runtime directories prepared; no database changes made.")
 
 privacy_value = Path(os.environ.get("APP_PRIVACY_DIR", str(runtime / "privacy"))).expanduser()
 privacy_path = privacy_value if privacy_value.is_absolute() else root / privacy_value
 privacy_path.mkdir(parents=True, exist_ok=True, mode=0o700)
 privacy_path.chmod(0o700)
+
+print("Runtime and privacy directories prepared; no database changes made.")

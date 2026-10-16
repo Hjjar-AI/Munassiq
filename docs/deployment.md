@@ -141,5 +141,6 @@ Android release/install/update steps are in release.md.
 
 References: Python sqlite3 online backup API, Nginx proxy_set_header documentation
 and Android app-signing/website-association documentation were consulted for the
-implementation. Real Nginx/systemd parsing, public HTTPS and production acceptance
+implementation. Disposable generated systemd units passed syntax verification (including this
+project path with spaces). Real Nginx parsing, public HTTPS and production acceptance
 remain unverified until your configuration and IP are available.

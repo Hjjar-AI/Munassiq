@@ -302,3 +302,46 @@
   permission, one pending request and upload rate limits, with no historic-role
   cooldown. Role removal deletes the grant. No code change was necessary.
 - No build, tests or migration inspection/work performed; whitespace check passed.
+
+## 2026-10-16 — missing operations/release implementations
+- User confirmed mhmmd as service account; actual static IP still pending.
+- Added online SQLite/media backup, exclusions/scrub/VACUUM, checksums, private
+  retention/lock/logging and weekly cron example. Added new-target offline restore,
+  current-journal validation, deletion replay/stewardship, cleared auth/queues and
+  credential reapplication. core/recovery.py journals existing deletions before
+  removal; no database fields or migrations changed. Conservative rollback policy
+  and persistent journal requirements are documented in backup-restore.md.
+- Added IP-SAN/self-signed certificate and Nginx/systemd generator, loopback proxy,
+  public static/APK paths, preflight, safe .env-based backend launcher and complete
+  deployment/update guides. No generated production configuration was installed.
+- Added environment-only Android release signing, validation-release rejection,
+  signed APK verification/publication helper, domain assetlinks generation/opt-in
+  and native HTTPS service routing. No versions or installed tools changed.
+- Pinned 35 already-installed runtime distributions for Linux/Python 3.14. pip check
+  passed. Python/shell/resource/whitespace checks and Django configuration check
+  passed without DB creation. Disposable reserved-IP generated systemd units passed
+  host syntax verification after fixing WorkingDirectory/EnvironmentFile quoting;
+  sandbox socket restrictions required read-only host verification. Host xfs units
+  emit unrelated CPUAccounting warnings; no generated-unit warnings remained.
+- No Nginx executable exists here. No real backup/restore drill, test-suite work,
+  certificate/signing-key generation, Gradle/build, APK publication, SMTP/FCM,
+  firewall change or service installation/start. Explicit permission for temporary
+  integration tests/restore drill was asked under AGENTS.md; answer pending.
+
+## 2026-10-16 — authorized recovery verification
+- User explicitly approved backup/restore integration tests and disposable restore
+  drill. Added core.tests_operations and isolated check_recovery.py runner.
+- All six tests passed in 7.210 seconds: real SQLite/media backup and four-archive
+  retention; credential/token/queue scrub including freed pages; current-journal
+  account/final-item deletion replay with stewardship and waitlist promotion;
+  missing-credential reapplication; refusal of existing targets, foreign/missing
+  journals and tar traversal/checksum tampering; journal permission failure blocks
+  account deletion before any changes. Duplicate deletion intents replay safely.
+- Temporary test databases used existing supplied migrations automatically. No
+  migration files inspected/changed, live database opened or outbound SMTP/FCM sent.
+- Updated current guides/plan/handoff to distinguish successful disposable recovery
+  from still-unverified production scheduling/storage/HTTPS/device acceptance.
+
+- Re-ran the six checks through the new isolated check_recovery.py entry point:
+  all passed in 7.256 seconds, with no non-test DB created. Final source syntax,
+  shell syntax, 313-key Android resource/manifest and whitespace checks passed.
