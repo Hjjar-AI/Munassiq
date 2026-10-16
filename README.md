@@ -209,13 +209,15 @@ APK install/update instructions will arrive with the Android milestone.
 
 For a new conversation or agent, start with [docs/handoff.md](docs/handoff.md)
 and the [updated project prompt](original.propmpt.md). The handoff distinguishes
-implemented APIs from missing clients/delivery/deployment and explains both Git repositories.
+implemented APIs from missing clients/delivery/deployment and explains the repository layout.
 
 Remaining work is in [docs/plan.md](docs/plan.md); completed work and verification
 limits are in [docs/work-log.md](docs/work-log.md).
-The existing backend Git repository is preserved and recorded as the root repository's
-`backend` submodule. Root operations/docs and backend source have separate milestone
-commits. No source was pushed to a remote; new backend commits currently exist locally.
+This is one Git repository: backend, Android, operations and docs are ordinary
+folders. Backend history was preserved during consolidation; there are no active
+submodules. The only active remote is `https://github.com/Hjjar-AI/Munassiq.git`.
+Read [the Git guide](docs/git.md) for everyday commands and recovery details.
+Consolidation commits are local; no remote push was performed.
 
 Design references: [Django deployment checklist](https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/)
 and [Django REST Framework](https://www.django-rest-framework.org/).

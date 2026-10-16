@@ -261,3 +261,17 @@
 - XML/313 bilingual keys/literal references/manifest/whitespace checks passed.
   No Gradle/build/compilation/tests or rendered visual QA; user rebuild and device
   acceptance required. Design rationale and limits recorded in android-design.md.
+
+## 2026-10-16 — consolidate Git into one repository
+- User requested fixing the nested/submodule layout after choosing one repository.
+- Saved current Android/tooling/docs edits in checkpoint dee7218. Created verified
+  full bundles, Git metadata archive and 158-file working snapshot/checksum manifest
+  in private ignored .repo-backups/20261016-monorepo before conversion.
+- Imported backend main (37f686f) unchanged into archive/backend-main and joined
+  histories with an ours-strategy merge plus the exact backend files under backend/.
+  Retained the original backend .git in recovery storage; removed the active gitlink,
+  .gitmodules and submodule configuration. No histories were rewritten.
+- Kept root master and sole active origin=https://github.com/Hjjar-AI/Munassiq.git.
+  No network fetch/push, remote deletion or build/test/migration work performed.
+- Updated README, handoff, consolidated prompt and Git/recovery guide. Historical
+  log entries retain the previous two-repository arrangement as history only.

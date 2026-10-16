@@ -1,0 +1,16 @@
+{% extends 'dashboard/base.html' %}{% load dashboard_tags %}{% block content %}
+<article class="card"><p class="prose">{{ item.payload.description }}</p>
+{% for image in item.payload.image_ids %}<a href="{% url 'dashboard:download' 'file' image %}"><img class="content-photo" loading="lazy" src="{% url 'dashboard:download' 'file' image %}" alt="{% bi 'صورة مرفقة بالمحتوى' 'Content photo' %}"></a>{% endfor %}
+{% if item.payload.pdf_id %}<p><a href="{% url 'dashboard:download' 'file' item.payload.pdf_id %}">{% bi 'تنزيل الملف التعريفي PDF' 'Download event PDF' %}</a></p>{% endif %}
+<dl>{% for key,value in fields %}<dt>{{ key }}</dt><dd>{{ value|readable }}</dd>{% endfor %}</dl>
+{% if item.payload.online_url %}<p><a href="{{ item.payload.online_url }}" rel="noopener noreferrer">{% bi 'رابط الحضور عبر الإنترنت' 'Online attendance link' %}</a></p>{% endif %}
+{% if item.payload.registration_url %}<p><a href="{{ item.payload.registration_url }}" rel="noopener noreferrer">{% bi 'رابط التسجيل الخارجي' 'External registration link' %}</a></p>{% endif %}
+{% if item.payload.service_id %}<p><a href="{% url 'dashboard:detail' 'service' item.payload.service_id %}">{% bi 'نقطة الخدمة المستضيفة' 'Service venue' %}</a></p>{% endif %}
+{% if item.payload.phone %}<a class="button" href="tel:{{ item.payload.phone }}">{% bi 'اتصال' 'Call' %}</a>{% endif %}
+{% if item.payload.address %}<button type="button" data-copy="{{ item.payload.address }}">{% bi 'نسخ العنوان' 'Copy address' %}</button>{% endif %}
+{% if item.payload.latitude != None and item.payload.longitude != None %}<a href="https://www.openstreetmap.org/directions?to={{ item.payload.latitude }}%2C{{ item.payload.longitude }}" rel="noopener noreferrer">{% bi 'الاتجاهات' 'Directions' %}</a>{% endif %}
+<button type="button" data-share data-title="{{ title }}">{% bi 'مشاركة' 'Share' %}</button>
+{% if apk_url %}<a class="button" href="{{ apk_url }}">{% bi 'تنزيل تطبيق أندرويد APK' 'Download Android APK' %}</a>{% endif %}</article>
+<div class="cards">{% for row in item.occurrences %}<article class="card"><h2>{{ row.event_local_start }}</h2><p>{{ row.event_local_end }} · {{ row.time_zone }}</p><p>{% bi 'في منطقتك الزمنية' 'In your time zone' %}: <time data-local-time="{{ row.starts_at|date:'c' }}">{{ row.user_local_start }}</time></p>{% if row.cancelled %}<span class="badge">{% bi 'ملغاة' 'Cancelled' %}</span>{% elif row.archived %}<span class="badge">{% bi 'أرشيف' 'Archived' %}</span>{% endif %}<a href="{% url 'dashboard:occurrence' row.id %}">{% bi 'التسجيل والتذكير والتفاصيل' 'Registration, reminders and details' %}</a></article>{% endfor %}</div>
+{% for row in linked %}<article class="card"><a href="{% url 'dashboard:detail' 'event' row.id %}">{{ row.payload.title }}</a></article>{% endfor %}
+{% endblock %}

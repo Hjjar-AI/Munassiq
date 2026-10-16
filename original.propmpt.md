@@ -248,3 +248,10 @@ logic, at least one integration test per endpoint, every registration transition
 and concurrent-seat races. Maintain accurate per-milestone verification limits.
 Do not claim production readiness from API tests. See handoff for existing source,
 missing work, outstanding decisions and the two-repository Git arrangement.
+
+## Confirmed repository decision (2026-10-16)
+
+Use one repository for backend, native Android, operations and documentation, with
+ordinary folders and no active Git submodules. Preserve original backend history
+when consolidating. The active remote is Hjjar-AI/Munassiq; never push or modify
+remote repositories without authorization. See docs/git.md for the current layout.

@@ -1,0 +1,18 @@
+{% load static %}
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>مُنسِّق / Account confirmation</title></head>
+<body>
+<main>
+<h1>مُنسِّق</h1>
+<p>تأكيد الحساب أو إعادة تعيين كلمة المرور / Account confirmation or password reset</p>
+<form id="confirmation">
+<label id="password-label" hidden>كلمة المرور الجديدة / New password
+<input id="password" type="password" autocomplete="new-password" maxlength="256"></label>
+<button type="submit">تأكيد / Confirm</button>
+</form>
+<p id="result" role="status" aria-live="polite"></p>
+<noscript>يحتاج التأكيد إلى JavaScript. / Enable JavaScript to confirm.</noscript>
+</main>
+<script src="{% static 'accounts/account_link.js' %}" defer></script>
+</body></html>

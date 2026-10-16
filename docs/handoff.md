@@ -214,48 +214,31 @@ computer. No production `.env`/secrets were created by the agent. Follow README
 setup before management commands. Runtime files are ignored by Git. Tests use
 `runtime/test.sqlite3`, not the live database. Never put real data there.
 
-## Why there is a submodule, and how to preserve the work
+## Git layout — one repository, no active submodules
 
-The backend already had its own Git history and origin
-`https://github.com/Hjjar-AI/Munassiq-backend.git`. The agent created a root
-repository for operations/docs and recorded that existing backend repository as
-a submodule, preserving its history rather than folding it into the root.
-This was an implementation choice, not a user requirement; it adds complexity
-and should have been explained before being introduced.
+Consolidated on 2026-10-16 at the user's request. backend/, android/, operations/
+and docs/ are ordinary tracked folders in the root repository. `backend/.git` and
+`.gitmodules` are no longer active. One root commit now records backend changes too.
+The sole active remote is origin=https://github.com/Hjjar-AI/Munassiq.git; the root
+branch remains master. No push was performed.
 
-The root stores a backend commit ID, **not the backend files themselves**. There
-are two histories and potentially two sets of uncommitted changes. A normal root
-commit does not save backend edits. Existing local files are present; no checkout
-or update command is needed merely to continue working here.
-
-Safe read-only checks:
-
-```bash
-git status --short
-git -C backend status --short
-git submodule status
-```
-
-These show root changes, backend changes, and the backend revision respectively.
-For a milestone, commit backend changes inside backend first, then commit the
-updated backend reference plus root docs/operations in root. No remote pushes
-have been performed by the agent. **Copy both local repositories and their Git
-metadata when moving this workspace**, or arrange authorized publishing of the
-backend commits before relying on a clone elsewhere. Cloning the remote alone
-may omit unpublished work. Do not use `git submodule update` to replace the
-working backend blindly, remove its `.git`, reset, or flatten history to fix this.
-If the owner wants one repository, plan a separate history-preserving conversion
-and verify a complete copy first. This handoff does not change the Git layout.
+The complete backend main history is preserved through the consolidation merge's
+second parent and archive/backend-main branch. Original commit hashes are intact;
+pre-consolidation backend history uses paths relative to its former repository
+root. See docs/git.md for commands and recovery. Private ignored backups under
+.repo-backups/20261016-monorepo contain verified bundles, metadata, a working-file
+snapshot/checksums and the original backend Git directory. Do not publish backups.
+Historical work-log entries describing two repositories record the old arrangement.
 
 ## Suggested opening message for a new agent
 
 > Continue Munassiq from this existing workspace. Read original.propmpt.md and
 > docs/handoff.md, docs/plan.md and docs/work-log.md first, then verify current
-> source and both Git statuses. Backend milestones 1–4 and dashboard milestone 5
-> exist; continue the uncompiled Android source using docs/android.md. Gradle/
+> source and the root Git status. Backend milestones 1–4 and dashboard milestone 5
+> exist; continue Android device acceptance using docs/android.md. Gradle/
 > builds still need explicit permission. Real browser/Firebase/production integration is still
 > pending. Preserve confirmed decisions and local
-> backend commits. Do not restart, flatten Git, deploy, or run builds. Ask about
+> history. Git is already consolidated; do not recreate submodules, deploy, or run builds. Ask about
 > unresolved dependent policies, and follow my current AGENTS.md restrictions.
 
 ## Latest native finishing checkpoint (2026-10-16)

@@ -1,0 +1,28 @@
+{
+  "provider": "GeoNames",
+  "license": "CC BY 4.0",
+  "retrieved_client_date": "2026-10-14",
+  "source": "https://download.geonames.org/export/dump/SY.zip",
+  "names_source": "https://download.geonames.org/export/dump/alternatenames/SY.zip",
+  "attribution": "Location data derived from GeoNames (https://www.geonames.org/), CC BY 4.0.",
+  "included_feature_codes": [
+    "PPL",
+    "PPLA",
+    "PPLA2",
+    "PPLA3",
+    "PPLA4",
+    "PPLA5",
+    "PPLC",
+    "PPLCD",
+    "PPLF",
+    "PPLG",
+    "PPLL",
+    "PPLR",
+    "PPLS"
+  ],
+  "places": 10816,
+  "arabic_name_fallbacks": 756,
+  "country_archive_sha256": "3bfe7e0b330ed6013bea3b964b010505966f86afc6819a7c539c310df9bb614f",
+  "names_archive_sha256": "de1389a5cbd7fd643d4c707ee0cdb3dbdf80357284881945aa9836a14ca929f3",
+  "transformations": "Filter current populated-place feature codes; choose language-labelled non-historic preferred Arabic/English names; English fallback when Arabic is absent."
+}

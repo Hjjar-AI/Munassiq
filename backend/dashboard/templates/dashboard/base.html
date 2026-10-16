@@ -1,0 +1,22 @@
+{% load static dashboard_tags %}<!doctype html>
+<html lang="{{ lang }}" dir="{% if rtl %}rtl{% else %}ltr{% endif %}">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ title }} — مُنسِّق</title><link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}">
+<script defer src="{% static 'dashboard/dashboard.js' %}"></script></head>
+<body><a class="skip" href="#main">{% bi 'انتقل إلى المحتوى' 'Skip to content' %}</a>
+<header><a class="brand" href="{% url 'dashboard:home' %}">مُنسِّق <small>Munassiq</small></a>
+<div class="header-tools"><form method="post" action="{% url 'dashboard:language' %}">{% csrf_token %}
+<button name="language" value="{% if rtl %}en{% else %}ar{% endif %}">{% if rtl %}English{% else %}العربية{% endif %}</button></form>
+{% if user %}<span>{{ user.name }}</span><form method="post" action="{% url 'dashboard:logout' %}">{% csrf_token %}<button>{% bi 'خروج' 'Sign out' %}</button></form>
+{% else %}<a href="{% url 'dashboard:login' %}">{% bi 'تسجيل الدخول' 'Sign in' %}</a>{% endif %}</div></header>
+<div class="layout"><nav aria-label="{% bi 'القائمة الرئيسية' 'Main navigation' %}">{% for entry in nav %}<a href="{% url 'dashboard:section' entry.slug %}">{{ entry.text }}</a>{% endfor %}</nav>
+<main id="main"><div class="eyebrow">{% bi 'دليل مهني · لقاءات معرفية' 'Professional directory · Learning together' %}</div>
+<h1>{{ title }}</h1>{% if verified %}<span class="badge">{% bi 'منظّم موثّق' 'Verified organizer' %}</span>{% endif %}
+{% if notice %}<p class="notice">{{ notice }}</p>{% endif %}
+{% if errors %}<div role="alert" class="errors"><strong>{% bi 'يرجى مراجعة البيانات والصلاحيات' 'Please check the details and permissions' %}</strong><ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul></div>{% endif %}
+{% if links %}<div class="actions">{% for entry in links %}{% if entry %}<a class="button secondary" href="{{ entry.url }}">{{ entry.text }}</a>{% endif %}{% endfor %}</div>{% endif %}
+{% block content %}{% endblock %}
+<footer>{% bi 'للمعلومات المهنية فقط. لا تُدخل بيانات المرضى أو المعلومات السريرية.' 'Professional information only. Never enter patient or clinical data.' %}
+<br><a href="{% url 'dashboard:section' 'policies' %}">{% bi 'الشروط والخصوصية' 'Terms and Privacy' %}</a>
+<br><a href="https://www.geonames.org/">GeoNames</a> · <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · {% bi 'قد تحتاج أسماء الأماكن إلى تصحيح' 'Place names may need correction' %}</footer>
+</main></div></body></html>
