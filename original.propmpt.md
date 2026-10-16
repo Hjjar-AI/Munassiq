@@ -72,7 +72,9 @@ Regular users register, choose reminders, follow organizers/categories, report,
 send feedback and apply for organizer status. Application: name, workplace, short
 reason, private photo/PDF credential up to 5 MB. Only moderators/admins may access
 credentials; delete after decision; exclude from backups. One open application
-per user; rejection allows immediate reapplication. Organizer role gives verified badge.
+per user; rejection or organizer-role removal allows immediate reapplication, subject
+to the normal verified-account, one-open-request and rate-limit rules. Approval is
+required again. Organizer role gives verified badge.
 
 Organizers create in app and dashboard; new items require approval. Rejection
 reason optional; notify owner. Rejected items can be edited/resubmitted. Cancel
@@ -255,3 +257,8 @@ Use one repository for backend, native Android, operations and documentation, wi
 ordinary folders and no active Git submodules. Preserve original backend history
 when consolidating. The active remote is Hjjar-AI/Munassiq; never push or modify
 remote repositories without authorization. See docs/git.md for the current layout.
+
+## Confirmed registration authority (2026-10-16)
+
+In-app registration controls seat capacity, waitlists and registration state.
+External registration links are informational only and never reserve in-app seats.

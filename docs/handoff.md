@@ -176,10 +176,12 @@ confirmed seats with optional reconfirmation. Do not ask these again.
 
 Open or implementation-specific choices requiring review before dependent work:
 
-- External registration link currently informational; does not reserve API seats.
-  Clarify intended relationship to in-app registration if changing that behavior.
-- After organizer-role removal, may the user immediately apply again? Rejected
-  applications already allow immediate reapplication; these are different cases.
+- Confirmed: in-app registration is authoritative for seats and waitlists. External
+  registration links are informational and do not reserve or consume seats.
+- Confirmed: a user whose organizer role was removed may immediately request it
+  again. Existing verified-email, active-account, one-open-request and upload rate
+  limits still apply; approval is required again. Rejections also permit immediate
+  reapplication. Existing server behavior already matches these decisions.
 - Notification decisions confirmed: essential lifecycle/moderation pushes always
   enabled; digest 09:00 local; banners seven days; three announcements per admin
   per UTC day (configurable). Missed reminder expiry one hour after due, never

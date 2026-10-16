@@ -1,5 +1,6 @@
 """Prepare text configuration/resources only. Never runs Gradle or creates an APK."""
 import argparse
+import ipaddress
 from pathlib import Path
 import ssl
 from urllib.parse import urlsplit
@@ -29,6 +30,17 @@ def main():
         raise SystemExit('Invalid origin')
     try: parsed.port
     except ValueError: raise SystemExit('Invalid server port')
+    verify_links = values.get('server.verify_links', 'false').lower()
+    if verify_links not in {'true', 'false'}:
+        raise SystemExit('server.verify_links must be true or false')
+    if verify_links == 'true':
+        try:
+            ipaddress.ip_address(parsed.hostname)
+            is_ip = True
+        except ValueError:
+            is_ip = False
+        if is_ip or values.get('server.certificate') or args.validation:
+            raise SystemExit('Verified links require a domain with public HTTPS trust; use false for self-signed IP hosting')
     output = args.output
     (output/'res/xml').mkdir(parents=True, exist_ok=True)
     root = ET.Element('network-security-config')
@@ -53,7 +65,7 @@ def main():
     tiles = values.get('maps.tiles','')
     if tiles and not tiles.startswith('https://'): raise SystemExit('Map tiles require HTTPS')
     if any(character in tiles for character in '\r\n\\'): raise SystemExit('Invalid map tile template')
-    (output/'server.properties').write_text(f'server.origin={origin}\nserver.host={parsed.hostname}\nmaps.tiles={tiles}\nvalidation={str(args.validation).lower()}\n')
+    (output/'server.properties').write_text(f'server.origin={origin}\nserver.host={parsed.hostname}\nmaps.tiles={tiles}\nvalidation={str(args.validation).lower()}\nverify.links={verify_links}\n')
     print('Prepared ignored Android text resources. No Gradle, build or packaging ran.')
 
 

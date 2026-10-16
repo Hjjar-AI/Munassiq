@@ -21,8 +21,6 @@ The consolidated target requirements are in [the updated prompt](../original.pro
   Real server connections remain unverified.
 - Add Nginx/self-signed HTTPS configuration and verify real SMTP/FCM before launch.
 - Add weekly backup/restore scripts, credential exclusions and deletion replay.
-- Resolve remaining external-registration semantics and organizer reapplication
-  restrictions before implementing their dependent behavior.
 - Pin deployment dependencies for the selected Python/platform; requirements remain ranges.
 - Review GeoNames location quality/Arabic fallbacks; preserve attribution in client pickers.
 - Obtain explicit permission before builds, compilation, Gradle or packaging.

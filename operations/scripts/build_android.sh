@@ -9,6 +9,15 @@ if [[ ! -x "$android_gradle" || ! -f "$android_sdk/platforms/android-35/android.
   echo 'Required side-by-side tools are missing. Run setup_android_tools.py first.' >&2
   exit 1
 fi
+android_task=':app:assembleDebug'
+if [[ "${1:-}" == '--release' ]]; then
+  android_task=':app:assembleRelease'
+  shift
+fi
+if [[ "${1:-}" == '--validation' && "$android_task" == ':app:assembleRelease' ]]; then
+  echo 'Release requires real server configuration; --validation is debug-only.' >&2
+  exit 1
+fi
 if [[ "${1:-}" == '--validation' ]]; then
   shift
   validation_config="$(mktemp /tmp/munassiq-validation-XXXXXX.properties)"
@@ -25,4 +34,4 @@ else
 fi
 # These environment values apply only to Gradle and its child processes.
 env ANDROID_HOME="$android_sdk" ANDROID_SDK_ROOT="$android_sdk" \
-  "$android_gradle" --project-dir "$project_dir/android" :app:assembleDebug "$@"
+  "$android_gradle" --project-dir "$project_dir/android" "$android_task" "$@"

@@ -2,6 +2,5 @@
 set -euo pipefail
 export PYTHONDONTWRITEBYTECODE=1
 project_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
-cd "$project_dir"
-.venv/bin/python operations/scripts/prepare_runtime.py
-exec .venv/bin/python backend/manage.py runserver --noreload "${APP_BIND:-127.0.0.1:8000}"
+backend_venv="${APP_VENV_DIR:-$project_dir/.venv}"
+exec "$backend_venv/bin/python" -B "$project_dir/operations/scripts/run_backend.py" dev "$@"

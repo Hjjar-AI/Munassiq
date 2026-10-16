@@ -30,7 +30,9 @@ runtime = Path(os.environ.get("APP_RUNTIME_DIR", "runtime")).expanduser()
 RUNTIME_ROOT = runtime if runtime.is_absolute() else PROJECT_ROOT / runtime
 MEDIA_ROOT = RUNTIME_ROOT / "media"
 PRIVATE_CREDENTIAL_ROOT = RUNTIME_ROOT / "private_credentials"
-STATIC_ROOT = RUNTIME_ROOT / "static"
+STATIC_ROOT = Path(os.environ.get("APP_STATIC_DIR", str(RUNTIME_ROOT / "static"))).expanduser()
+privacy = Path(os.environ.get("APP_PRIVACY_DIR", str(RUNTIME_ROOT / "privacy"))).expanduser()
+PRIVACY_JOURNAL_DIR = privacy if privacy.is_absolute() else PROJECT_ROOT / privacy
 # Directories are prepared by an explicit script, not by importing settings.
 DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3",
     "NAME": RUNTIME_ROOT / "database.sqlite3",

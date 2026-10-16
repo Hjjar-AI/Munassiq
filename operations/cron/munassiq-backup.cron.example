@@ -1,0 +1,4 @@
+# User crontab (crontab -e), NOT /etc/crontab. Replace paths if necessary.
+# Every Sunday at 03:00 in the server's local time zone.
+# The script loads .env, uses APP_BACKUP_DIR, keeps BACKUP_KEEP archives, and logs each run.
+0 3 * * 0 cd '/mnt/Common/IT Projects/Lects' && '/mnt/Common/IT Projects/Lects/.venv/bin/python' -B operations/scripts/backup_data.py

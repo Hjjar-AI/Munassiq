@@ -72,6 +72,8 @@ def run_jobs():
             continue
     with transaction.atomic():
         for item in Item.objects.select_for_update().filter(status='soft_deleted', deleted_at__lte=now-timedelta(days=3)):
+            from core.recovery import record_deletion
+            record_deletion('item', item)
             audit(None, 'item.hard_delete', item, kind=item.kind)
             item.delete()
             processed += 1

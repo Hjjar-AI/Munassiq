@@ -12,6 +12,15 @@ val deployment = Properties().apply {
     require(config.exists()) { "Run python3 operations/scripts/prepare_android.py first. See docs/android.md." }
     config.inputStream().use(::load)
 }
+// Signing secrets come only from the user's build process; never BuildConfig/source.
+val releaseRequested = gradle.startParameter.taskNames.any { it.contains("release", ignoreCase = true) }
+val signingValues = listOf("MUNASSIQ_KEYSTORE_FILE", "MUNASSIQ_STORE_PASSWORD", "MUNASSIQ_KEY_ALIAS", "MUNASSIQ_KEY_PASSWORD")
+    .map { providers.environmentVariable(it).orNull }
+if (releaseRequested) {
+    require(deployment.getProperty("validation", "false") != "true") { "Release requires real server configuration, not --validation." }
+    require(signingValues.all { !it.isNullOrBlank() }) { "Set all four MUNASSIQ signing environment variables. See docs/release.md." }
+    require(file(signingValues[0]!!).isFile) { "Configured release keystore is missing." }
+}
 fun quoted(value: String) = "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 android {
     namespace = "org.munassiq.app"
@@ -23,6 +32,7 @@ android {
         versionCode = 1
         versionName = "0.1.0"
         manifestPlaceholders["serverHost"] = deployment.getProperty("server.host")
+        manifestPlaceholders["verifyAppLinks"] = deployment.getProperty("verify.links", "false")
         buildConfigField("String", "SERVER_ORIGIN", quoted(deployment.getProperty("server.origin")))
         buildConfigField("String", "MAP_TILES", quoted(deployment.getProperty("maps.tiles", "")))
         buildConfigField("boolean", "IS_VALIDATION", deployment.getProperty("validation", "false"))
@@ -35,7 +45,22 @@ android {
         isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions { jvmTarget = "17" }
-    buildTypes { release { isMinifyEnabled = false } }
+    if (releaseRequested) {
+        signingConfigs {
+            create("release") {
+                storeFile = file(signingValues[0]!!)
+                storePassword = signingValues[1]
+                keyAlias = signingValues[2]
+                keyPassword = signingValues[3]
+            }
+        }
+    }
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            if (releaseRequested) signingConfig = signingConfigs.getByName("release")
+        }
+    }
 }
 dependencies {
     implementation(platform("androidx.compose:compose-bom:2025.04.01"))

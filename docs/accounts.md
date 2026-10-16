@@ -30,7 +30,9 @@ notifications. See [notification behavior](notifications.md).
 
 `POST /api/v1/organizer-requests/` is multipart, with fields `name`, `workplace`,
 `reason` and `credential`. It requires a verified email. Only one open request is
-allowed per account; rejected applicants can reapply immediately.
+allowed per account; rejected applicants and users whose organizer role was removed
+can reapply immediately. Approval is required again; existing verification, active-account
+and upload rate-limit rules still apply.
 Credentials accept JPEG/PNG or an unencrypted PDF, at most 5 MB.
 A streaming upload handler stops oversized file data before the complete file is stored. Image decoding
 and re-encoding strips metadata; PDF parsing validates basic document structure.

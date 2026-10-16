@@ -294,3 +294,11 @@
   bundles and metadata recovery snapshots remain unchanged. master is the sole
   local/permanent remote branch. Updated history commands and branch guidance.
 - No source, versions, builds, tests or migration changes.
+
+## 2026-10-16 — remaining product decisions confirmed
+- User chose authoritative in-app seat/waitlist registration and immediate organizer
+  reapplication after role removal. Updated prompt, account docs, handoff and plan.
+- Production ApplyView already checks current organizer role, verified-account
+  permission, one pending request and upload rate limits, with no historic-role
+  cooldown. Role removal deletes the grant. No code change was necessary.
+- No build, tests or migration inspection/work performed; whitespace check passed.

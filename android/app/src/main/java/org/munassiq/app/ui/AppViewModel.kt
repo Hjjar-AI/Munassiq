@@ -92,8 +92,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         val server = Uri.parse(org.munassiq.app.BuildConfig.SERVER_ORIGIN)
         if (uri.scheme == "https" && uri.host == server.host) {
             val parts = uri.pathSegments
-            if (parts.size == 2 && parts[0] == "events" && parts[1].toLongOrNull() != null)
-                open(Screen("events/${parts[1]}/?time_zone=${Uri.encode(ZoneId.systemDefault().id)}", "events", "detail"))
+            if (parts.size == 2 && parts[0] in listOf("events", "services") && parts[1].toLongOrNull() != null)
+                open(Screen("${parts[0]}/${parts[1]}/?time_zone=${Uri.encode(ZoneId.systemDefault().id)}", parts[0], "detail"))
         } else if (uri.scheme == "munassiq" && uri.host in listOf("events", "services", "occurrences")) {
             val id = uri.pathSegments.firstOrNull()?.toLongOrNull() ?: return
             open(Screen("${uri.host}/$id/?time_zone=${Uri.encode(ZoneId.systemDefault().id)}", "events", if (uri.host == "occurrences") "occurrence" else "detail"))

@@ -19,6 +19,8 @@ def remove_private_file(name):
 
 def delete_user(user):
     from catalog.maintenance import prepare_account_deletion
+    from core.recovery import record_deletion
+    record_deletion("user", user)
     prepare_account_deletion(user)
     names = list(OrganizerRequest.objects.filter(user=user).exclude(credential_name='').values_list('credential_name', flat=True))
     user.delete()
