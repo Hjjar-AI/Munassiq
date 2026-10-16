@@ -37,18 +37,19 @@ Before publication, origin was fetched and confirmed to be an ancestor of local
 master. The push was a normal fast-forward, with no force push.
 
 Original backend commit hashes remain reachable through the consolidation merge's
-second parent and local archive/backend-main branch. This branch is historical,
-not a second repository. Inspect older backend history with:
+second parent. The redundant local archive branch was safely removed after its
+ancestry was verified; master is the only local and remote branch. Inspect older
+backend history using its preserved original commit:
 
 ```bash
-git log archive/backend-main -- accounts/services.py
+git log 37f686f -- accounts/services.py
 git log -- backend/accounts/services.py
 ```
 
 The first reads pre-consolidation backend paths; the second reads changes under the
 new backend/ prefix. History was joined without rewriting either original history.
 An ordinary future push of master includes the merged backend ancestors too; no
-force push or separate publication of the archive branch is needed.
+force push or separate backend branch is needed.
 
 ## Recovery snapshot
 
@@ -69,3 +70,10 @@ investigation. Keep these recovery files private and outside published source.
 The work account's existing Android-folder permissions were not expanded to root
 Git metadata. Use the repository owner's account for Git mutations, or a separate
 clone if work needs an independently writable Git checkout.
+
+## Branch workflow
+
+Keep master as the single permanent branch, tracking origin/master. For substantial
+changes, create a temporary feature/fix branch, merge reviewed work into master,
+and remove the temporary branch after merging. Do not use permanent backend and
+Android branches: those components are folders in the same product repository.

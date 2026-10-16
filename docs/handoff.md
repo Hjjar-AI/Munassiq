@@ -224,7 +224,8 @@ branch remains master. User-authorized publication to origin/master succeeded on
 2026-10-16; private recovery snapshots were not published.
 
 The complete backend main history is preserved through the consolidation merge's
-second parent and archive/backend-main branch. Original commit hashes are intact;
+second parent (original backend tip 37f686f). The redundant archive branch was
+safely removed; master is now the only local/remote branch. Original hashes are intact;
 pre-consolidation backend history uses paths relative to its former repository
 root. See docs/git.md for commands and recovery. Private ignored backups under
 .repo-backups/20261016-monorepo contain verified bundles, metadata, a working-file

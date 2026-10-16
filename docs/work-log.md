@@ -285,3 +285,12 @@
   old-backend remote changes, deployment or build/test work performed.
 - Updated current Git documentation to reflect publication; historical records of
   the conversion remaining local at that time are retained.
+
+## 2026-10-16 — branch cleanup
+- User requested fixing branch clutter. Fetched origin, verified the backend archive
+  tip was an ancestor of master and safely deleted local archive/backend-main with
+  git branch -d. No force deletion or remote branch removal.
+- Original backend tip 37f686f remains reachable through the consolidation merge;
+  bundles and metadata recovery snapshots remain unchanged. master is the sole
+  local/permanent remote branch. Updated history commands and branch guidance.
+- No source, versions, builds, tests or migration changes.
