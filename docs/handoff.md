@@ -220,7 +220,8 @@ Consolidated on 2026-10-16 at the user's request. backend/, android/, operations
 and docs/ are ordinary tracked folders in the root repository. `backend/.git` and
 `.gitmodules` are no longer active. One root commit now records backend changes too.
 The sole active remote is origin=https://github.com/Hjjar-AI/Munassiq.git; the root
-branch remains master. No push was performed.
+branch remains master. User-authorized publication to origin/master succeeded on
+2026-10-16; private recovery snapshots were not published.
 
 The complete backend main history is preserved through the consolidation merge's
 second parent and archive/backend-main branch. Original commit hashes are intact;

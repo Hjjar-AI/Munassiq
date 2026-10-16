@@ -29,11 +29,12 @@ commands. Backend and Android releases can still have independent version number
 
 The sole active remote is origin at https://github.com/Hjjar-AI/Munassiq.git.
 The current project branch remains master to match the existing repository.
-No GitHub repositories were deleted, renamed, archived or pushed by this conversion.
+No GitHub repositories were deleted, renamed or archived. After conversion, the
+user separately authorized publication and master was pushed on 2026-10-16.
 The former backend remote URL is retained only in recovery/historical records.
 The old GitHub backend repository remains unchanged; archiving it is optional later.
-Remote-tracking information was inspected locally, without fetching current GitHub
-state. Local success does not prove these commits have been published.
+Before publication, origin was fetched and confirmed to be an ancestor of local
+master. The push was a normal fast-forward, with no force push.
 
 Original backend commit hashes remain reachable through the consolidation merge's
 second parent and local archive/backend-main branch. This branch is historical,

@@ -217,7 +217,8 @@ This is one Git repository: backend, Android, operations and docs are ordinary
 folders. Backend history was preserved during consolidation; there are no active
 submodules. The only active remote is `https://github.com/Hjjar-AI/Munassiq.git`.
 Read [the Git guide](docs/git.md) for everyday commands and recovery details.
-Consolidation commits are local; no remote push was performed.
+The consolidated master branch was published to origin on 2026-10-16 after explicit
+user authorization. Local recovery snapshots remain ignored and were not published.
 
 Design references: [Django deployment checklist](https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/)
 and [Django REST Framework](https://www.django-rest-framework.org/).

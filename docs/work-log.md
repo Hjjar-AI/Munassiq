@@ -275,3 +275,13 @@
   No network fetch/push, remote deletion or build/test/migration work performed.
 - Updated README, handoff, consolidated prompt and Git/recovery guide. Historical
   log entries retain the previous two-repository arrangement as history only.
+
+## 2026-10-16 — user-authorized publication
+- User explicitly requested pushes. Fetched origin and verified origin/master was
+  an ancestor of the consolidated local branch; no concurrent remote changes needed
+  merging. Normal push advanced master from 8824194 to df2a14c, including original
+  backend history, and established upstream tracking.
+- Recovery snapshots/credentials/runtime/build outputs stayed ignored. No force push,
+  old-backend remote changes, deployment or build/test work performed.
+- Updated current Git documentation to reflect publication; historical records of
+  the conversion remaining local at that time are retained.
