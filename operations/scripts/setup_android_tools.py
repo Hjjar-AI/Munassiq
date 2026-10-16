@@ -51,8 +51,6 @@ def main():
     parser.add_argument('--root', type=Path, default=Path('/opt/android-shared'))
     parser.add_argument('--reuse-downloads', type=Path, help='Optional folder containing previous partial downloads')
     args = parser.parse_args()
-    cache = args.root/'downloads/munassiq'
-    cache.mkdir(parents=True, exist_ok=True)
     for name, url, algorithm, expected, relative, marker, previous_name in PACKAGES:
         target = args.root/relative
         if target.exists():
@@ -60,7 +58,12 @@ def main():
                 raise SystemExit(f'Existing incomplete directory: {target}; no overwrite attempted.')
             print(f'Keeping existing version: {target}', flush=True)
             continue
+        cache = args.root/'downloads'/('gradle' if relative.startswith('gradle/') else 'android-sdk')
+        cache.mkdir(parents=True, exist_ok=True)
         archive = cache/name
+        legacy = args.root/'downloads/munassiq'/name
+        if not archive.exists() and legacy.is_file():
+            shutil.copy2(legacy, archive)
         if not archive.exists() and args.reuse_downloads and (args.reuse_downloads/previous_name).is_file():
             shutil.copy2(args.reuse_downloads/previous_name, archive)
         download(url, archive, algorithm, expected)

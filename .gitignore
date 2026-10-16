@@ -7,3 +7,6 @@ runtime/
 *.sqlite3-*
 .coverage
 android-build.log
+
+# Local repository recovery snapshots (never publish).
+.repo-backups/

@@ -1,12 +1,32 @@
 # Android source and first-build handoff
 
 The native app source is in `android/`, tracked by the root Git repository. It is
-not another submodule. **No Gradle, dependency resolution, Kotlin compilation,
-APK packaging, emulator or device run has occurred. This is not a verified APK.**
+not another submodule. The user reported a successful validation APK build,
+including the nullable-warning corrections. Device behavior and real server
+connections remain unverified.
 The user's latest instruction is to run builds personally: agents should supply
 the command and must not invoke Gradle/builds themselves unless the user explicitly
 changes that instruction. Fixing compiler/dependency errors and runtime acceptance
 remains required work once the user supplies build output.
+
+## Shared tool layout
+
+```text
+/opt/android-shared/
+├── android-studio/       Installed IDE with its bundled Java
+├── Sdk/                  SDK-managed components; preserve its internal structure
+├── gradle/               Explicitly installed, versioned Gradle distributions
+├── downloads/
+│   ├── gradle/           Gradle archives and checksums
+│   └── android-sdk/      SDK archives and repository metadata
+└── .gradle/              Existing shared Gradle user-home/cache data
+```
+
+Keep installed versions side by side. Do not move active Gradle caches or the
+SDK merely to rename them: other projects, IDE settings and daemons may reference
+those paths. Personal Gradle caches under the user's home are independent and
+are not merged here. No global PATH, Java or SDK defaults are changed.
+Joplin and containerd remain separate applications under /opt.
 
 ## Commands for your terminal (current workflow)
 
@@ -20,8 +40,8 @@ Downloads/checks the pinned archives and installs alongside existing versions:
 `/opt/android-shared/Sdk/platforms/android-35`,
 `/opt/android-shared/Sdk/build-tools/35.0.0`, and
 `/opt/android-shared/gradle/gradle-8.13`. Download archives stay in
-`/opt/android-shared/downloads/munassiq`. Existing partial archives were moved there
-and will be resumed when the provider supports it. Existing installations are preserved. It does not run a build,
+`/opt/android-shared/downloads/gradle` and `downloads/android-sdk`, grouped by tool
+rather than project. Partial downloads resume when the provider supports it. Existing installations are preserved. It does not run a build,
 change PATH/Java/SDK defaults or accept licenses. The shared SDK already has an
 accepted license record; this command does not change it. You need write access
 to those shared directories. If permission fails, report the error rather than
@@ -39,8 +59,7 @@ blocked. A reserved, non-connecting address is used only to validate compilation
 `tee` displays and saves the output so you can share compiler errors. The build
 script selects the exact Gradle and SDK paths only for this process; shell and
 Android Studio defaults remain unchanged. A successful build should place the APK
-in `android/app/build/outputs/apk/debug/app-debug.apk`. This path is an expectation,
-not evidence that an APK already exists. No build has been run by the agent.
+in `android/app/build/outputs/apk/debug/app-debug.apk`. The user has reported a successful validation build. No build has been run by the agent.
 
 When `android/deployment.properties` contains your actual HTTPS IP origin and
 public certificate, use the connecting build instead:
@@ -162,7 +181,7 @@ ANDROID_HOME=/opt/android-shared/Sdk ANDROID_SDK_ROOT=/opt/android-shared/Sdk /o
 ```
 
 This resolves libraries, runs KSP/Room generation, compiles Kotlin/resources and
-packages a debug APK. It has **not** been run. Resolve evidenced build errors;
+packages a debug APK. The user successfully ran the validation build before the latest UI changes. Resolve evidenced build errors;
 do not treat source checks as success. Release signing and release APK distribution
 are separate work; keep signing keys private and stable across updates.
 
@@ -195,11 +214,10 @@ Verify every written flow, then finish gaps found by the build/device run:
   the existing web confirmation page. Digest taps currently return to the home list.
 - Update check compares public `apk_version_code` to the installed code and offers
   the configured HTTPS APK link. Browser downloads/install instructions are used;
-  no APK was produced, signed, installed or verified. Set matching metadata only
+  a debug validation APK was built by the user; release signing and installation remain unverified. Set matching metadata only
   after a real APK exists; do not fabricate an update.
-- Complete native UI polish/validation: full Arabic API-error copy, numeric/date
-  entry/digits, photo gallery previews, map accessibility, picker paging and all
-  follow/profile displays. Specialized staff tools remain browser-based.
+- Verify the new native finishing work described below on a real device. Specialized
+  staff tools remain browser-based; follow/profile displays still need acceptance.
 - Write/run meaningful Android unit/instrumentation tests after the toolchain can
   execute them. No native test results exist yet.
 
@@ -212,3 +230,64 @@ Primary references used for source choices:
 [Room releases](https://developer.android.com/jetpack/androidx/releases/room),
 [Android trust configuration](https://developer.android.com/privacy-and-security/security-config),
 [FCM receive behavior](https://firebase.google.com/docs/cloud-messaging/android/receive-messages).
+
+## Building from the work account
+
+The user approved developer-group write access to this checkout's android folder,
+including deployment configuration. ACLs grant existing access and inheritance for
+new files; project root, backend and Git metadata were not changed. Both mhmmd and
+work already belong to developer. Avoid simultaneous builds of the same checkout.
+
+Run as work (not through sudo):
+
+```bash
+cd "/mnt/Common/IT Projects/Lects"
+GRADLE_USER_HOME="$HOME/.gradle" bash operations/scripts/build_android.sh --validation --console=plain 2>&1 | tee "$HOME/munassiq-android-build.log"
+```
+
+This selects work's personal dependency cache and saves its log in its own home;
+the build script selects the shared SDK and Gradle executable. work's private shell
+configuration was not inspected. ACL inspection passed; a build from work remains
+unverified until the user supplies its output.
+
+## 2026-10-16 — native finishing implementation
+
+- PhotoGallery loads permitted API files into sampled, memory-only bitmaps, with
+  previous/next, a larger dialog, spoken position, error/retry and individual removal
+  in organizer forms. Event/service images and organizer profile photos use it.
+  Upload buttons respect the existing three-event/five-service photo limits.
+- InputSupport translates known account/content/registration errors into bilingual
+  resources, flattens field errors instead of showing JSON, and provides localized
+  status fallbacks for unknown messages. Unknown English validation text becomes a
+  localized field/status message in Arabic; it is not an exact translation of every
+  future server error. User-authored ban reasons retain their original text.
+- Numeric input supports Arabic/Persian digits and Arabic decimal/group separators.
+  Price serialization retains decimal precision. Email/phone/password/numeric
+  keyboards are selected, with field-labelled parse errors and spoken error updates.
+- Native date/time pickers support event dates, rescheduling, deadlines, quiet hours
+  and working hours. Text entry remains available; local event dates use the selected
+  IANA zone and reject DST gaps/ambiguities. ISO text entry remains Gregorian even
+  when the display calendar is Hijri; display preferences do not change API dates.
+- ReferencePicker searches and appends city/venue pages, preserves choices by ID,
+  resets pages when search/country changes, and offers retry/loading/empty states.
+  ApiClient adapts the actual city's X-Next-Page header to results/next_page internally;
+  the backend API contract is unchanged. Countries/categories/currencies are unpaged
+  in the current API. No API endpoints were invented.
+- Map controls have localized spoken names. Coordinate entry, select-center and a
+  text list provide alternatives to canvas gestures. The embedded map has a bounded
+  scroll area, and existing venue coordinates initialize organizer editing.
+
+XML, resource parity (304 keys), literal resource references, manifest and whitespace
+checks passed. No Gradle, compilation, builds or test-suite work was performed for
+this change. Prior user build success predates this source: rebuild and exercise
+RTL/LTR, TalkBack, small screens, upload/removal, page two/search/country reset,
+invalid dates/numbers, permissions and offline failures before declaring acceptance.
+
+## HTML-inspired native visual refresh
+
+See [design notes](android-design.md). DesignSystem.kt now centralizes the teal/sage
+light/dark scheme, shapes, typography and native glyphs. A bottom bar, clearer
+headers, tonal browse/detail cards, collapsible advanced filters and grouped settings
+adapt ideas from the user's local Material You/One UI/minimal HTML examples.
+313 bilingual resource keys pass source checks. Rebuild and visual/device acceptance
+remain required; no HTML WebView, dependency/version change or build was introduced.

@@ -42,7 +42,10 @@ class ApiClient(private val vault: SessionVault) {
             val bytes = (if (status in 200..299) connection.inputStream else connection.errorStream)?.use { it.readBytes() } ?: byteArrayOf()
             val text = bytes.toString(Charsets.UTF_8)
             if (status !in 200..299) throw ApiFailure(status, text.take(8000))
-            if (text.isBlank()) JSONObject() else JSONTokener(text).nextValue()
+            val parsed = if (text.isBlank()) JSONObject() else JSONTokener(text).nextValue()
+            if (path.substringBefore('?') == "cities/" && parsed is org.json.JSONArray) {
+                JSONObject().put("results", parsed).put("next_page", connection.getHeaderField("X-Next-Page")?.toIntOrNull() ?: JSONObject.NULL)
+            } else parsed
         } finally { connection.disconnect() }
     }
     private suspend fun refresh(oldAccess: String?) = refreshLock.withLock {

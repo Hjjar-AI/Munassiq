@@ -10,12 +10,20 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.*
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -54,19 +62,41 @@ import java.time.format.DateTimeFormatter
     }
     fun confirm(title:String,action:()->Unit){confirmation=title to action}
     val dark=when(prefs.getString("theme","system")){"dark"->true;"light"->false;else->isSystemInDarkTheme()}
-    val colors=if(dark)darkColorScheme(primary=Color(0xFF9DD4C8)) else lightColorScheme(primary=Color(0xFF176B61),background=Color(0xFFF5F6F0))
-    MaterialTheme(colorScheme=colors){
+    MunassiqTheme(dark){
         BackHandler{if(editor!=null)editor=null else model.back()}
-        Scaffold(topBar={Column{
-            TopAppBar(title={Text(label(editor?.title?:state.screen.title))},navigationIcon={TextButton(onClick={if(editor!=null)editor=null else model.back()}){Text(label("back"))}},actions={TextButton(onClick={editor=null;model.open(Screen("","settings","settings"))}){Text(label("settings"))}})
-            LazyRow(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(8.dp)){
-                items(listOf("events","services","map","categories","registrations","mine")){key->TextButton(onClick={editor=null;model.open(when(key){
-                    "map"->Screen("map/services/","map","map");"registrations"->Screen("me/registrations/",key);"mine"->Screen("me/items/",key);else->Screen("$key/"+(if(key=="events")"?sort=date" else ""),key)
-                })}){Text(label(key))}}
-            }
-        }}){padding->Column(Modifier.padding(padding).fillMaxSize()){
+        fun destination(key:String)=when(key){
+            "map"->Screen("map/services/","map","map")
+            "registrations"->Screen("me/registrations/",key)
+            "mine"->Screen("me/items/",key)
+            else->Screen("$key/"+(if(key=="events")"?sort=date" else ""),key)
+        }
+        Scaffold(containerColor=MaterialTheme.colorScheme.background,
+            topBar={Column{
+                Row(Modifier.fillMaxWidth().padding(horizontal=20.dp,vertical=12.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)){
+                    Column(Modifier.weight(1f)){
+                        Text(label("app_name"),color=MaterialTheme.colorScheme.primary,style=MaterialTheme.typography.labelLarge)
+                        Text(label(editor?.title?:state.screen.title),style=MaterialTheme.typography.headlineSmall)
+                    }
+                    if(editor!=null||state.screen.kind!="list")TextButton(onClick={if(editor!=null)editor=null else model.back()}){Text(label("back"))}
+                    IconButton(onClick={editor=null;model.open(Screen("","settings","settings"))}){
+                        AppGlyph("settings",modifier=Modifier.size(24.dp).semantics{contentDescription=context.getString(R.string.settings)})
+                    }
+                }
+                LazyRow(Modifier.fillMaxWidth().padding(horizontal=20.dp),horizontalArrangement=Arrangement.spacedBy(8.dp)){
+                    items(listOf("categories","mine")){key->FilterChip(selected=editor==null&&state.screen.title==key,onClick={editor=null;model.open(destination(key))},label={Text(label(key))})}
+                }
+            }},
+            bottomBar={NavigationBar(containerColor=MaterialTheme.colorScheme.surface,tonalElevation=2.dp){
+                for(key in listOf("events","services","map","registrations"))NavigationBarItem(
+                    selected=editor==null&&state.screen.title==key,
+                    onClick={editor=null;model.open(destination(key))},
+                    icon={AppGlyph(key,color=if(state.screen.title==key)MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant)},
+                    label={Text(label(key),style=MaterialTheme.typography.labelSmall)}
+                )
+            }}
+        ){padding->Column(Modifier.padding(padding).fillMaxSize()){
             if(BuildConfig.IS_VALIDATION)Text(label("validation_build"),color=MaterialTheme.colorScheme.error,modifier=Modifier.padding(12.dp))
-            state.error?.let{message->Text(if(message in listOf("session_expired","request_failed","connection_failed"))label(message) else message,color=MaterialTheme.colorScheme.error,modifier=Modifier.padding(12.dp))}
+            state.error?.let{message->Text(if(message in listOf("session_expired","request_failed","connection_failed"))label(message) else message,color=MaterialTheme.colorScheme.error,modifier=Modifier.padding(12.dp).semantics{liveRegion=LiveRegionMode.Polite})}
             state.message?.let{Text(label(it),modifier=Modifier.padding(12.dp))}
             if(state.offline)Row{Text(label("offline"),Modifier.weight(1f));TextButton(onClick={model.refresh()}){Text(label("retry"))}}
             if(editor!=null){FormsScreen(model,editor!!){editor=null;model.refresh()}}
@@ -79,16 +109,21 @@ import java.time.format.DateTimeFormatter
                 "policies"->LazyColumn(Modifier.padding(16.dp)){item{val value=state.data as? JSONObject;Text(value?.optString(if(context.resources.configuration.locales[0].language=="ar")"terms_ar"else"terms_en").orEmpty());Text(value?.optString(if(context.resources.configuration.locales[0].language=="ar")"privacy_ar"else"privacy_en").orEmpty())}}
                 "follows"->FollowsScreen(model,state,{title,act->confirm(title,act)})
                 else->PullToRefreshBox(isRefreshing=state.busy,onRefresh={model.refresh()}){
-                    LazyColumn(Modifier.fillMaxSize().padding(horizontal=16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
+                    LazyColumn(Modifier.fillMaxSize().padding(horizontal=20.dp),contentPadding=PaddingValues(top=12.dp,bottom=24.dp),verticalArrangement=Arrangement.spacedBy(14.dp)){
+                        if(state.screen.title in listOf("events","services"))item{BrowseIntro(state.screen.title)}
                         if(state.screen.title=="events")items(banners){banner->Card(Modifier.fillMaxWidth()){Column(Modifier.padding(12.dp)){Text(banner.optString(if(context.resources.configuration.locales[0].language=="ar")"title_ar"else"title_en"));Text(banner.optString(if(context.resources.configuration.locales[0].language=="ar")"body_ar"else"body_en"))}}}
                         if(state.screen.title in listOf("events","services"))item{FilterBar(model,state.screen.title)}
                         if(state.screen.title=="mine"&&state.user?.optJSONArray("roles")?.toString()?.contains("organizer")==true)item{
                             Text(label("organizer_guide"));Row{Button(onClick={editor=NativeForms.content("event")}){Text(label("new_event"))};Button(onClick={editor=NativeForms.content("service")}){Text(label("new_service"))}}
                         }
                         items(rows(state.data),key={it.optLong("id")}){row->
-                            Card(Modifier.fillMaxWidth()){
-                                Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
+                            Card(Modifier.fillMaxWidth(),shape=RoundedCornerShape(24.dp),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),elevation=CardDefaults.cardElevation(defaultElevation=1.dp)){
+                                Column(Modifier.padding(20.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
                                     val payload=row.optJSONObject("payload")
+                                    Row(horizontalArrangement=Arrangement.spacedBy(8.dp),verticalAlignment=Alignment.CenterVertically){
+                                        AppGlyph(if(row.optString("kind")=="service")"services" else "events",Modifier.size(20.dp))
+                                        Text(label(if(row.optString("kind")=="service")"services" else if(row.has("occurrence_id"))"registration" else state.screen.title),style=MaterialTheme.typography.labelMedium,color=MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
                                     var registrationTitle by remember(row.optLong("id")){mutableStateOf("")}
                                     LaunchedEffect(row.optLong("occurrence_id")){if(row.has("occurrence_id"))runCatching{registrationTitle=(model.repository.load("occurrences/${row.optLong("occurrence_id")}/").value as JSONObject).optJSONObject("payload")?.optString("title").orEmpty()}}
                                     Text(registrationTitle.ifBlank{payload?.optString("title",payload.optString("name"))?:row.optString("name",row.optString(if(context.resources.configuration.locales[0].language=="ar")"name_ar"else"name_en",label("registration")))},style=MaterialTheme.typography.titleMedium)
@@ -99,7 +134,7 @@ import java.time.format.DateTimeFormatter
                                             for(action in listOf("cancel","reconfirm")){val caption=label(if(action=="cancel")"cancel_registration" else "reconfirm");TextButton(onClick={confirm(caption){model.act("registrations/${row.getLong("id")}/$action/")}}){Text(caption)}}
                                         }
                                         payload!=null->{
-                                            if(row.has("status"))Text(label(row.optString("status")))
+                                            if(row.has("status"))Surface(shape=RoundedCornerShape(10.dp),color=MaterialTheme.colorScheme.secondaryContainer){Text(label(row.optString("status")),Modifier.padding(horizontal=12.dp,vertical=5.dp),style=MaterialTheme.typography.labelMedium)}
                                             row.optJSONObject("date_range")?.let{range->Text(formatTime(context,range.optString("start"))+" — "+formatTime(context,range.optString("end")))}
                                             val kind=row.optString("kind","event")
                                             TextButton(onClick={model.open(Screen("${kind}s/${row.getLong("id")}/?time_zone=${Uri.encode(ZoneId.systemDefault().id)}",if(kind=="event")"events" else "services","detail"))}){Text(label("open_details"))}
@@ -139,32 +174,34 @@ import java.time.format.DateTimeFormatter
 @Composable private fun LoginScreen(model:AppViewModel,form:(String)->Unit){
     var email by remember{mutableStateOf("")};var password by remember{mutableStateOf("")}
     Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(14.dp)){
-        OutlinedTextField(email,{email=it},label={Text(label("email"))})
-        OutlinedTextField(password,{password=it},label={Text(label("password"))},visualTransformation=PasswordVisualTransformation())
+        OutlinedTextField(email,{email=it},label={Text(label("email"))},keyboardOptions=KeyboardOptions(keyboardType=KeyboardType.Email))
+        OutlinedTextField(password,{password=it},label={Text(label("password"))},visualTransformation=PasswordVisualTransformation(),keyboardOptions=KeyboardOptions(keyboardType=KeyboardType.Password))
         Button(onClick={model.login(email,password)}){Text(label("login"))}
         TextButton(onClick={form("signup")}){Text(label("signup"))};TextButton(onClick={form("forgot")}){Text(label("forgot"))}
     }
 }
 
 @Composable private fun FilterBar(model:AppViewModel,kind:String){
-    var query by remember{mutableStateOf("")};var archive by remember{mutableStateOf(false)};var open by remember{mutableStateOf(false)}
-    var country by remember{mutableStateOf("")};var city by remember{mutableStateOf("")};var cityQuery by remember{mutableStateOf("")};var category by remember{mutableStateOf("")};var sort by remember{mutableStateOf(if(kind=="events")"date" else "name")};var currency by remember{mutableStateOf("")}
+    var expanded by remember(kind){mutableStateOf(false)}
+    var query by remember(kind){mutableStateOf("")};var archive by remember(kind){mutableStateOf(false)};var open by remember(kind){mutableStateOf(false)}
+    var country by remember(kind){mutableStateOf("")};var city by remember(kind){mutableStateOf("")};var category by remember(kind){mutableStateOf("")};var sort by remember(kind){mutableStateOf(if(kind=="events")"date" else "name")};var currency by remember(kind){mutableStateOf("")}
     val options=remember{mutableStateMapOf<String,List<Pair<String,String>>>()}
     val context=LocalContext.current
     LaunchedEffect(kind){for(key in listOf("countries","categories","currencies"))runCatching{options[key]=rows(model.lookup("$key/")).map{it.getLong("id").toString() to it.optString(if(context.resources.configuration.locales[0].language=="ar")"name_ar" else "name_en")}}}
-    LaunchedEffect(country,cityQuery){kotlinx.coroutines.delay(300);runCatching{options["cities"]=rows(model.lookup("cities/?q=${Uri.encode(cityQuery)}"+(if(country.isBlank())"" else "&country=$country"))).map{it.getLong("id").toString() to it.optString(if(context.resources.configuration.locales[0].language=="ar")"name_ar" else "name_en")}}}
-    Column{
-        OutlinedTextField(query,{query=it},label={Text(label("search"))},modifier=Modifier.fillMaxWidth())
+    Column(verticalArrangement=Arrangement.spacedBy(8.dp)){
+        OutlinedTextField(query,{query=it},label={Text(label("search"))},modifier=Modifier.fillMaxWidth(),shape=RoundedCornerShape(28.dp),singleLine=true)
+        TextButton(onClick={expanded=!expanded}){Text(label(if(expanded)"hide_filters" else "advanced_filters"))}
+        if(expanded){
         Selection(label("country_id"),country,listOf("" to label("all"))+options["countries"].orEmpty()){country=it;city=""}
-        OutlinedTextField(cityQuery,{cityQuery=it},label={Text(label("city_search"))})
-        Selection(label("city_id"),city,listOf("" to label("all"))+options["cities"].orEmpty()){city=it}
+        ReferencePicker(model,label("city_id"),city,"cities/"+(if(country.isBlank())"" else "?country=$country"),true){city=it}
         Selection(label("category_ids"),category,listOf("" to label("all"))+options["categories"].orEmpty()){category=it}
         Selection(label("sort"),sort,(if(kind=="events")listOf("date","name")else listOf("name","price")).map{it to label(it)}){sort=it}
         if(kind=="services"){
             Row{Checkbox(open,{open=it});Text(label("open_now"))}
             Selection(label("currency_id"),currency,listOf("" to label("none"))+options["currencies"].orEmpty()){currency=it}
         }else Row{Checkbox(archive,{archive=it});Text(label("archive"))}
-        Button(onClick={
+        }
+        Button(modifier=Modifier.fillMaxWidth(),onClick={
             val params=Uri.Builder().appendQueryParameter("q",query).appendQueryParameter("sort",sort)
             if(country.isNotBlank())params.appendQueryParameter("country",country)
             if(city.isNotBlank())params.appendQueryParameter("city",city)
@@ -202,5 +239,18 @@ fun formatTime(context:Context,value:String):String = runCatching{
         }
         followed=result
     }
-    LazyColumn(Modifier.padding(16.dp)){items(followed){(kind,id,name)->Row{Text(name,Modifier.weight(1f));val caption=label("unfollow");val collection=if(kind=="category")"categories"else"organizers";TextButton(onClick={confirm(caption){model.act("me/follows/$collection/$id/","DELETE")}}){Text(caption)}}}
+    LazyColumn(Modifier.padding(16.dp)) {
+        items(followed) { (kind, id, name) ->
+            Row {
+                Text(name, Modifier.weight(1f))
+                val caption = label("unfollow")
+                val collection = if (kind == "category") "categories" else "organizers"
+                TextButton(onClick = {
+                    confirm(caption) { model.act("me/follows/$collection/$id/", "DELETE") }
+                }) {
+                    Text(caption)
+                }
+            }
+        }
+    }
 }

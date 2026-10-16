@@ -155,3 +155,109 @@
 - Added a labelled validation configuration that blocks API calls until real IP
   HTTPS settings are supplied. A domain is not required; actual IP/certificate
   remain unspecified. Validation source/resources were checked without a build.
+
+## 2026-10-15 — first user-run Android build correction
+- User's Gradle 8.13 build reached KSP, then reported a missing closing brace in
+  AppScreen.kt. Closed the FollowsScreen LazyColumn and expanded its nested lambdas
+  so each scope is visible. No dependency or version changes.
+- Lightweight resource/source checks passed; no agent-run Gradle, compilation,
+  packaging or tests. Compilation and APK creation await the user's next build.
+
+## 2026-10-15 — successful user build and nullable-value warnings
+- User reported assembleDebug BUILD SUCCESSFUL after the brace correction.
+  This verifies validation APK compilation/packaging, not server/device behavior.
+- Fixed the three reported warnings: nullable JSON form values and absent roles
+  arrays now use safe calls with empty-string fallbacks instead of direct calls.
+- Resource/source checks and diff whitespace checks passed. No Gradle, compilation
+  or tests run by the agent; warning-free compilation awaits the user's rebuild.
+
+## 2026-10-16 — shared Android tools organization
+- User confirmed the corrected validation build succeeded; device/server acceptance
+  remains pending.
+- Grouped the five existing download archives/checksum/metadata files under
+  /opt/android-shared/downloads/gradle and downloads/android-sdk. Verified SHA-256
+  before and after each move; removed the now-empty downloads/munassiq folder.
+- Updated the installer to use these tool-specific directories, with legacy archive
+  reuse. Preserved installed tools, SDK structure, versions, caches, defaults and
+  unrelated /opt applications. Documented the layout in docs/android.md.
+- Python syntax/help and diff checks passed; no downloads, builds or tests ran.
+
+## 2026-10-16 — multi-account access inspection
+- Host inspection confirms mhmmd/work already share android-dev, developer and
+  pnpm-users groups. Sandbox nobody/nogroup mappings were misleading: the shared
+  Gradle daemon directory is owned by work with mode 700, not corrupt ownership.
+- Corrected mhmmd .bashrc ANDROID_HOME to /opt/android-shared/Sdk; private backup
+  .bashrc.before-android-sdk-fix-20261016 retained. Shell syntax check pending.
+- Project Android/build directories belong to mhmmd:mhmmd and are not writable by
+  work. Shared tools are readable/executable. No new group or tool version needed.
+- Automatic approval review rejected recursive group/ACL changes to android because
+  they could expose deployment secrets. No project permissions were changed.
+- work home configuration remains inaccessible without authentication. Await exact
+  failing command/error and approval of shared-checkout access or separate checkout.
+  No Gradle/build/tests ran; no caches were deleted or merged.
+
+## 2026-10-16 — approved shared Android checkout access
+- User explicitly approved write sharing between mhmmd/work, including Android
+  deployment configuration. Applied developer-group read/write ACLs within android
+  only and default directory ACLs for future build files. Verified 1,575 entries.
+- Preserved file ownership, system/tool permissions, backend and Git metadata.
+  Both users already belong to developer; no group creation/change was needed.
+- mhmmd .bashrc syntax check passed. work shell configuration still not inspected;
+  use command-scoped GRADLE_USER_HOME=$HOME/.gradle for its build and a home-folder
+  log, since the project root is not shared for writing. No Gradle/build was run.
+
+## 2026-10-16 — work account configuration helper
+- Direct work home access still denied; sudo requires interactive authentication.
+  No attempt made to bypass account isolation or request a password in chat.
+- Added configure_android_account.py for work to run itself: backs up .bashrc,
+  configures shared SDK and personal Gradle cache in a repeatable managed block.
+  Preserves Java/Gradle versions and unrelated settings; refuses root execution.
+- Python syntax and diff checks passed; helper not executed against work's private
+  settings. User must run it as work. No Gradle/build/tests ran.
+
+## 2026-10-16 — authorized work setup attempt
+- User explicitly authorized authenticated account configuration. sudo authentication
+  failed once; cancelled the prompt without repeated guesses. work .bashrc was not
+  changed and its configuration checks did not run. Existing project ACL fix remains.
+- No credential recorded in project files. work can run configure_android_account.py
+  directly from its own session, without sudo. No Gradle/build/tests ran.
+
+## 2026-10-16 — five native finishing areas
+- Implemented memory-only sampled photo gallery (including profile photos), larger
+  view, per-photo removal and event/service upload limits; preserved API file access.
+- Added localized structured errors, known account/catalog/registration translations,
+  field/status fallbacks, preserved user-authored ban reasons and spoken errors.
+- Added native date/time controls, localized digit/decimal normalization, appropriate
+  keyboards, exact decimal price serialization and field-labelled parse errors.
+- Added paged/searchable city/venue pickers. Verified production backend city array
+  responses use X-Next-Page; client adapts that header without changing backend API.
+- Added spoken map controls, coordinate selection, accessible places list, retry,
+  existing-coordinate initialization and bounded embedded scrolling.
+- XML/304 bilingual keys/literal references/manifest and whitespace checks passed.
+  No Gradle, builds, compilation, tests or device run. Prior user APK success predates
+  these changes. Docs record precise fallback and acceptance limitations.
+- User confirmed work account helper ran and SDK/personal-cache outputs are correct.
+
+## 2026-10-16 — both accounts' Bash configuration organization
+- Organized /home/mhmmd/.bashrc and /home/work/.bashrc with consistent sections
+  for history, terminal/prompt, aliases, completion and installed development tools.
+- Replaced old prose comments; preserved disabled options and managed Android
+  markers. Exact executable lines and their order are unchanged, verified before
+  writing; bash -n passed for both files. No shell startup commands were executed.
+- Created private timestamped .bashrc.before-organization-* backups in each home.
+  work retains its final personal-cache override; its earlier assignment is labelled
+  legacy. No Java/SDK/Gradle versions, PATH behavior, permissions or caches changed.
+- Used direct work-account authentication successfully; no credential stored in
+  project files. No Gradle, builds, compilation or tests ran.
+
+## 2026-10-16 — HTML-inspired Android design refresh
+- Reviewed 17 local Downloads HTML themes; primary inspiration was Material You
+  light/dark, One UI spacing and minimal typography. Original files left untouched.
+- Added shared native teal/sage theme tokens/shapes/type and dependency-free Canvas
+  glyphs, bottom navigation, secondary chips, spacious header/cards, browse intros,
+  pill search/collapsible advanced filters, detail heroes and settings sections.
+- Preserved prior native finishing edits, APIs, roles and Arabic/English behavior.
+  No WebView/sample business data, font downloads or tool/dependency versions added.
+- XML/313 bilingual keys/literal references/manifest/whitespace checks passed.
+  No Gradle/build/compilation/tests or rendered visual QA; user rebuild and device
+  acceptance required. Design rationale and limits recorded in android-design.md.

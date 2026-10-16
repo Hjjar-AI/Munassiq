@@ -29,13 +29,18 @@ import org.munassiq.app.BuildConfig
     LaunchedEffect(Unit){runCatching{settings=model.lookup("app-settings/") as JSONObject}}
     LazyColumn(Modifier.fillMaxSize().padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
         item{
-            Text(label("privacy_intro"))
+            Card(colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){
+                Column(Modifier.fillMaxWidth().padding(20.dp),verticalArrangement=Arrangement.spacedBy(8.dp)){
+                    Text(label("account_section"),style=MaterialTheme.typography.titleLarge)
+                    Text(label("privacy_intro"),style=MaterialTheme.typography.bodyMedium)
+                }
+            }
             if(user==null){Button(onClick={model.open(Screen("","login","login"))}){Text(label("login"))}}
             else{
-                Text(user.optString("name"));Text(user.optString("email"))
+                Text(user.optString("name"),style=MaterialTheme.typography.titleLarge);Text(user.optString("email"),color=MaterialTheme.colorScheme.onSurfaceVariant)
                 for(operation in listOf("profile","verify","password","email","preferences","apply","organizer_profile","feedback","delete_account")){
-                    if(operation=="organizer_profile"&&!user.optJSONArray("roles").toString().contains("organizer"))continue
-                    if(operation=="apply"&&user.optJSONArray("roles").toString().contains("organizer"))continue
+                    if(operation=="organizer_profile"&&!user.optJSONArray("roles")?.toString().orEmpty().contains("organizer"))continue
+                    if(operation=="apply"&&user.optJSONArray("roles")?.toString().orEmpty().contains("organizer"))continue
                     TextButton(onClick={scope.launch{
                         try{
                             val spec=NativeForms.account(operation)
@@ -55,6 +60,8 @@ import org.munassiq.app.BuildConfig
                 TextButton(onClick={model.logout(false)}){Text(label("logout"))}
                 TextButton(onClick={model.logout(true)}){Text(label("logout_all"))}
             }
+            HorizontalDivider(Modifier.padding(vertical=16.dp))
+            Text(label("display_section"),style=MaterialTheme.typography.titleLarge)
             Selection(label("language"),prefs.getString("language","system").orEmpty(),listOf("system" to label("system"),"ar" to "العربية","en" to "English")){value->scope.launch{
                 try{
                     val phone=android.content.res.Resources.getSystem().configuration.locales[0].language
@@ -65,6 +72,8 @@ import org.munassiq.app.BuildConfig
             }}
             Selection(label("theme"),prefs.getString("theme","system").orEmpty(),listOf("system","light","dark").map{it to label(it)}){value->prefs.edit().putString("theme",value).apply();(context as? Activity)?.recreate()}
             Row{Checkbox(hijri,{hijri=it;prefs.edit().putBoolean("hijri",it).apply()});Text(label("hijri"))}
+            HorizontalDivider(Modifier.padding(vertical=16.dp))
+            Text(label("privacy_section"),style=MaterialTheme.typography.titleLarge)
             TextButton(onClick={model.open(Screen("policies/current/","policies","policies"))}){Text(label("policies"))}
             settings?.let{value->
                 if(value.optInt("apk_version_code")>BuildConfig.VERSION_CODE&&value.optString("apk_download_url").startsWith("https://")){

@@ -30,11 +30,17 @@ import java.time.ZoneId
     }
     LazyColumn(Modifier.fillMaxSize().padding(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
         item{
-            Text(payload.optString("title",payload.optString("name")),style=MaterialTheme.typography.headlineSmall)
-            Text(payload.optString("description"))
+            Card(colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.primaryContainer)){
+                Column(Modifier.fillMaxWidth().padding(22.dp),verticalArrangement=Arrangement.spacedBy(10.dp)){
+                    AppGlyph(if(kind=="event")"events" else "services",Modifier.size(28.dp))
+                    Text(payload.optString("title",payload.optString("name")),style=MaterialTheme.typography.headlineSmall)
+                }
+            }
+            Text(payload.optString("description"),style=MaterialTheme.typography.bodyLarge)
             for(key in listOf("speaker_name","topic","address","contact_person","registration_contact"))payload.optString(key).takeIf{it.isNotBlank()}?.let{Text(label(key)+": "+it)}
             if(!payload.isNull("price"))Text(label("price")+": "+payload.optString("price"))
             profile?.let{organizer->Text(organizer.optString("name")+if(organizer.optBoolean("verified"))" · "+label("verified")else "");Text(organizer.optString("bio"))
+                if(!organizer.isNull("photo_id"))PhotoGallery(model,listOf(organizer.getLong("photo_id")))
                 TextButton(onClick={model.open(Screen("organizers/${organizer.optLong("id")}/events/","events"))}){Text(label("events"))}
                 val caption=label("follow");OutlinedButton(onClick={model.act("me/follows/organizers/${organizer.optLong("id")}/","PUT")}){Text(caption)}
                 TextButton(onClick={model.act("me/follows/organizers/${organizer.optLong("id")}/","DELETE")}){Text(label("unfollow"))}
@@ -45,7 +51,7 @@ import java.time.ZoneId
             if(!payload.isNull("latitude")&&!payload.isNull("longitude"))OutlinedButton(onClick={DeviceActions.external(context,Uri.parse("geo:${payload.optDouble("latitude")},${payload.optDouble("longitude")}?q=${payload.optDouble("latitude")},${payload.optDouble("longitude")}"))}){Text(label("directions"))}
             OutlinedButton(onClick={DeviceActions.share(context,payload.optString("title",payload.optString("name")),BuildConfig.SERVER_ORIGIN+"/${kind}s/$id/")}){Text(label("share"))}
             val ids=payload.optJSONArray("image_ids")?:JSONArray()
-            for(index in 0 until ids.length()){val asset=ids.optLong(index);TextButton(onClick={scope.launch{try{DeviceActions.download(context,model.repository,"files/$asset/","image-$asset.jpg","image/jpeg")}catch(error:Exception){model.showError(error)}}}){Text(label("view_photo"))}}
+            PhotoGallery(model, (0 until ids.length()).map { ids.getLong(it) })
             if(!payload.isNull("pdf_id")){val asset=payload.getLong("pdf_id");TextButton(onClick={scope.launch{try{DeviceActions.download(context,model.repository,"files/$asset/","event-$id.pdf","application/pdf")}catch(error:Exception){model.showError(error)}}}){Text(label("download_pdf"))}}
             val report=FormSpec("reports/","POST","report",listOf(Field("reason","choice",listOf("spam","wrong_info","other")),Field("text","long",optional=true)),JSONObject().put("item_id",id))
             TextButton(onClick={edit(report)}){Text(label("report"))}

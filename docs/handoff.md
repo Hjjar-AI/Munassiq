@@ -1,6 +1,6 @@
 # Handoff for the next conversation or agent
 
-Recorded 2026-10-15. Read this, `../original.propmpt.md`, `plan.md`, `work-log.md`,
+Updated 2026-10-16. Read this, `../original.propmpt.md`, `plan.md`, `work-log.md`,
 and applicable AGENTS.md before work. Verify current source: this records a
 snapshot, not an automatic guarantee about subsequent edits.
 
@@ -8,8 +8,8 @@ snapshot, not an automatic guarantee about subsequent edits.
 
 Milestones 1–4 have backend implementations; milestone 5 now has a server-rendered
 dashboard and public fallback pages. This is not a finished Android app or production
-deployment. Android milestone 6 now has uncompiled native source in `android/`;
-continue its first-build and device acceptance checklist in `android.md`. Explicit
+deployment. The user successfully built the validation Android APK. Latest native
+finishing changes still require their rebuild and device acceptance in `android.md`. Explicit
 permission is still required before Gradle/builds. Latest user preference: **the
 user runs builds personally**; provide the command, do not invoke it. Tool downloads/
 installs belong beside existing versions under /opt/android-shared without changing
@@ -117,12 +117,13 @@ Source map:
   asynchronous uploads, downloads/share/clipboard and accessibility.
 - [ ] Android deep-link handoff is still pending the Android app implementation.
 
-### Milestone 6: Android source exists; compilation and acceptance remain
+### Milestone 6: validation build succeeded; latest changes/acceptance remain
 
 - [x] Choose/document minimum Android version (7.0/API 24), structure and candidate dependencies.
 - The following unchecked items mean **verify and finish**, not that no source
   exists. Native screen/client/cache/notification/map source is described in android.md;
-  no Kotlin compilation, native test, emulator run or APK exists yet.
+  the user built the earlier validation APK; the latest UI finishing source awaits
+  rebuild. No native test or emulator/device acceptance result exists yet.
 - [ ] Compose/MVVM navigation, API/session client and safe token storage, Room
   cache, own-data cleanup on logout/deletion, refresh/offline/retry behavior.
 - [ ] Arabic/English strings, RTL, Arabic font, phone digits, accessibility,
@@ -204,8 +205,8 @@ This is historical evidence, not a guarantee about later source changes.
 Supplied migrations were exercised in temporary databases only. Full Syria seed
 in a disposable DB added 10,817 country/place rows; second run added zero. No
 production database was migrated/seeded. No actual SMTP, FCM, browser dashboard,
-Android, internet HTTPS, installed services or restore were verified. No builds,
-compilation, packaging or Gradle ran. Python dependencies were installed using
+Android device behavior, internet HTTPS, installed services or restore were verified.
+The user ran Gradle and successfully built a validation APK; agents ran no builds. Python dependencies were installed using
 prebuilt wheels and no bytecode-writing checks.
 
 Local `.venv` exists in this workspace; do not assume it transfers to another
@@ -256,3 +257,15 @@ and verify a complete copy first. This handoff does not change the Git layout.
 > pending. Preserve confirmed decisions and local
 > backend commits. Do not restart, flatten Git, deploy, or run builds. Ask about
 > unresolved dependent policies, and follow my current AGENTS.md restrictions.
+
+## Latest native finishing checkpoint (2026-10-16)
+
+See docs/android.md native finishing section: PhotoGallery.kt, InputSupport.kt and
+ReferencePicker.kt plus existing form/detail/map/client changes implement the five
+requested polish areas. City pagination reads the real X-Next-Page header. There
+are 304 bilingual resource keys; unknown server messages use localized fallbacks,
+not fabricated exact translations. No dependencies/versions/backend API changed.
+User must rebuild: source/resource checks do not establish compilation or device QA.
+work account setup was run by the user and its SDK/cache paths confirmed correct;
+project android ACLs allow developer-group sharing. Keep per-user Gradle caches and
+avoid concurrent builds of the same checkout.

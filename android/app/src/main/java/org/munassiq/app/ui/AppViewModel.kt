@@ -51,9 +51,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
     private fun failure(error: Exception) {
         if (error is kotlinx.coroutines.CancellationException) throw error
-        val message = if (error is ApiFailure) {
-            if (error.status == 401) "session_expired" else error.detail.ifBlank { "request_failed" }
-        } else "connection_failed"
+        val message = localizedError(getApplication(), error)
         mutable.value = mutable.value.copy(error = message, user = repository.user())
     }
     fun login(email: String, password: String) = viewModelScope.launch {

@@ -13,7 +13,12 @@ The consolidated target requirements are in [the updated prompt](../original.pro
 - Finish milestone 6: user runs setup/build commands personally (see docs/android.md).
   Do not run Gradle/builds on the user's behalf unless instructed again. Verify
   toolchain/dependencies from their output, fix build errors and run device/native
-  tests. Complete the acceptance/gap checklist in docs/android.md; no APK exists.
+  tests. Complete the acceptance/gap checklist in docs/android.md. User's validation
+  APK build succeeded after the nullable-value corrections. Latest native finishing
+  source (gallery, localized errors/input, map accessibility and paged pickers) awaits
+  the user's rebuild and phone acceptance. The HTML-inspired native design refresh
+  also needs light/dark, RTL/LTR, large-font and navigation acceptance (android-design.md).
+  Real server connections remain unverified.
 - Add Nginx/self-signed HTTPS configuration and verify real SMTP/FCM before launch.
 - Add weekly backup/restore scripts, credential exclusions and deletion replay.
 - Resolve remaining external-registration semantics and organizer reapplication
